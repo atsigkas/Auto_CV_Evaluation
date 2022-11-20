@@ -51,3 +51,10 @@ https://arxiv.org/pdf/2103.14542.pdf
 • Β. Μοσχόπουλος, Κ. Νικηφορίδης. Υπολογισμός Συνάφειας Επιστημόνων με Ερευνητικά
 Αντικείμενα για Σύστημα Προτάσεων με Χρήση Τεχνικών Επεξεργασίας Φυσικής Γλώσσας,
 Διπλωματική Εργασία., https://ikee.lib.auth.gr/record/339729?ln=el
+
+## :moneybag: -Usefull resources- 
+* [Auto-CV Trello](https://trello.com/b/SWOFQXBE/auto-cv-evaluation)  
+* [Our Trello](https://trello.com/b/KAkJRGN1/generall)  
+* [Our Draw.io](https://app.diagrams.net/#G1I_OPAZBnxWE5G1zlRVOU4ImHdwYb7HC9)  
+* [Our Figma](https://www.figma.com/files/team/1176171282483657252/Auto-CV-evaluation?fuid=1176171271419555487)  
+* [Our Overleaf](https://www.overleaf.com/project/63629d362690a23d4db61c53)
