@@ -1,4 +1,4 @@
-# fe_ui
+# my-vue-project
 
 ## Project setup
 ```
