@@ -41,7 +41,6 @@ def fetch_data():
         check number
         check papers
         '''
-
         for profile in profiles:
             print(profile['Author'])
             if profile['email']==email or profile['phone']==phone:
