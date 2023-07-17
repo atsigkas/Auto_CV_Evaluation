@@ -98,11 +98,3 @@ try:
 except Exception as error:
     print(error)
     print("Problem")
-
-try:
-    for url in researchgate['']:
-
-
-except Exception as error:
-    print(error)
-    print("Problem")
