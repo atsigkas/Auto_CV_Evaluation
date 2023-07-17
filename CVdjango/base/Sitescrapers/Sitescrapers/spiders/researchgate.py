@@ -10,16 +10,16 @@ class Researchgate(scrapy.Spider):
 
     def __init__(self, start_url=None,paper=None, *args, **kwargs):
         super(Researchgate, self).__init__(*args, **kwargs)
-        proxy_url = get_proxy_url(start_url,True)
-        self.start_urls = [proxy_url]
+        self.start_point_url = start_url
+        self.start_urls = [get_proxy_url(start_url,True)]
         self.paper = paper
-        self.meta = {'paper': paper}
+        self.meta = {'paper': paper,'start_urls': self.start_urls, 'start_point_url': self.start_point_url}
 
     def parse(self, response):
         found = False
         xlink = LinkExtractor()
+        i=1
         for link in xlink.extract_links(response):
-            i=1
             if "researchgate.net/publication" in link.url:
                 print(link.text,similarity(self.meta['paper'], link.text))
                 if similarity(self.meta['paper'], link.text) > 0.8:
@@ -30,8 +30,8 @@ class Researchgate(scrapy.Spider):
         if found is False:
             try:
                 i += 1
-                next_page_url=self.meta['start_urls']+'/'+i
-                yield response.follow(get_proxy_url(next_page_url, True),
+                next_page_url = get_proxy_url(self.meta['start_point_url']+'/'+str(i),True)
+                yield response.follow(next_page_url,
                                       callback=self.parse)
             except Exception as error:
                 print(error)
