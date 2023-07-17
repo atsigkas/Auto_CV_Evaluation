@@ -8,8 +8,9 @@ class Researchgate(scrapy.Spider):
     name = "researchgate"
     allowed_domains = [ "proxy.scrapeops.io", "www.researchgate.net"]
 
-    def __init__(self, start_url=None,paper=None, *args, **kwargs):
+    def __init__(self, start_url=None,author=None,paper=None, *args, **kwargs):
         super(Researchgate, self).__init__(*args, **kwargs)
+        self.author = author
         self.start_point_url = start_url
         self.start_urls = [get_proxy_url(start_url,True)]
         self.paper = paper
@@ -21,7 +22,6 @@ class Researchgate(scrapy.Spider):
         i=1
         for link in xlink.extract_links(response):
             if "researchgate.net/publication" in link.url:
-                print(link.text,similarity(self.meta['paper'], link.text))
                 if similarity(self.meta['paper'], link.text) > 0.8:
                     yield response.follow(get_proxy_url(link.url, True),
                                           callback=self.extract_paper)

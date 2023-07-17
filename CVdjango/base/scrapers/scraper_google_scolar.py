@@ -40,6 +40,7 @@ def fetch_data():
         check email
         check number
         check papers
+        try and exeption
         '''
         for profile in profiles:
             print(profile['Author'])
@@ -62,6 +63,7 @@ def fetch_data():
             Google search
             populate the database 
             '''
+
     else:
         print("Client stance is invalid")
 

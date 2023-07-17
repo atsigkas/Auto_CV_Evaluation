@@ -4,12 +4,14 @@ from ..items import SiteItem,similarity,get_proxy_url
 
 
 def search(response):
+    found=False
     xlink = LinkExtractor()
     for link in xlink.extract_links(response):
         try:
-            if "researchgate.net/publication" in link.url or "www.researchgate.net/scientific-contributions" in link.url:
+            if "researchgate.net/profile" in link.url or "researchgate.net/scientific-contributions" in link.url:
                 url_split= link.url.split('/', 4)[4]
-                if similarity(response.meta['author'],url_split)>0.3:
+                if similarity(response.meta['author'],url_split)>0.7 and found is False:
+                    found = True
                     response.meta['site_item'][response.meta['site']] = link.url
                     yield response.meta['site_item']
                 else:
@@ -20,7 +22,7 @@ def search(response):
 
 
 class GoogleSpider(scrapy.Spider):
-    name = "researchgate"
+    name = "GoogleSpider"
     allowed_domains = ["google.com", "proxy.scrapeops.io", "www.researchgate.net", "semanticscholar.org"]
 
     def __init__(self, start_url=None, author=None, paper=None, *args, **kwargs):
