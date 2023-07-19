@@ -1,22 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urlparse, urljoin
-from urllib.parse import urlencode
-from difflib import SequenceMatcher
-
-import re
-
-API_KEY = '7335ee33-d1e8-4a2a-9166-672f20fcaece'
-def get_proxy_url(url,UsingProxy):
-    if UsingProxy is True:
-        payload = {'api_key': API_KEY, 'url': url}
-        proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
-        return proxy_url
-    else:
-        return url
-
-def similarity(a, b):
-    return SequenceMatcher(None, a, b).ratio()
+from CVdjango.base.scrapers.utils import *
+from CVdjango.base.db.utils import *
 
 
 def search(response, researchgate):
@@ -24,11 +9,14 @@ def search(response, researchgate):
     found = False
     for link in soup.find_all('a', href=True):
         if "profile" in link['href'] or "scientific-contributions" in link['href']:
-            url_split= link['href'].split('/', 1)[1]
-            if similarity(researchgate['author'], url_split) > 0.7 and found is False:
+            #url_split= link['href'].split('/', 1)[1]
+            print(similarity(researchgate['author'], link.text),link.text)
+            if similarity(researchgate['author'], link.text) > 0.7 and found is False:
                 found = True
-                researchgate['url'] = 'https://www.researchgate.net/'+link['href']
+                researchgate['researchgate_url'] = link['href']
+                print(found,researchgate)
                 return researchgate
+
 
 def get_and_apply(url, callback, researchgate):
     response = requests.get(get_proxy_url(url, True))
@@ -36,16 +24,12 @@ def get_and_apply(url, callback, researchgate):
         return callback(response, researchgate)
 
 
-website='site:researchgate.net'
-original_name_author='Grigorios Tsoumakas'
-author='Grigorios Tsoumakas'
-author2 = author.replace(" ", "+")
-paper='Dense Distributions from Sparse Samples: Improved Gibbs Sampling Parameter Estimators for LDA'
-paper2=paper.replace(" ", "+")
-url = "https://www.google.com/search?q="+website+'+'+author2+'+'+paper2
-#url='https://www.researchgate.net/profile/Grigorios-Tsoumakas'
+def search_author(author,paper,website):
 
-try:
+    author_url = author.replace(" ", "+")
+    paper_url = paper.replace(" ", "+")
+    url = "https://www.google.com/search?q="+website+'+'+author_url+'+'+paper_url
+
     response = requests.get(get_proxy_url(url,True))
     # Get the content of the response
     webpage_html_content = response.text
@@ -70,31 +54,32 @@ try:
     similarity_table = list(zip(urls, similarity_scores))
     similarity_table.sort(key=lambda x: x[1], reverse=True)
     print(similarity_table)
-
     researchgate ={
-        "author":'Grigorios Tsoumakas',
-        "id":'',
-        "url":'',
-        "papers":[{
-            "title",
-            "year",
-            "abstract",
-            "citation",
-            "topics",
-            "type"
-        }]
+        'author': '',
+        "email": '',
+        "phone": '',
+        "researchgate_url": '',
+        "googleScholar_url": '',
+        "sematic_url": '',
     }
+    researchgate['author']=author
 
     for url, score in similarity_table:
         if score > 0.8:
             try:
                 get_and_apply(url,search,researchgate)
                 print(researchgate)
+                return researchgate
             except Exception as error:
                 print(error)
                 print("Problem Found Author")
+    return None
 
 
-except Exception as error:
-    print(error)
-    print("Problem")
+
+def update_candinate(col,candinate,id):
+    result = col.update_one(
+        {"_id": id},
+        # Update: researchgate_url
+        {"$set": {"researchgate_url": candinate['researchgate_url']}}
+    )

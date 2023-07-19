@@ -32,26 +32,19 @@ class MongoDBHandler:
 
     def find_document(self, collection, name):
         try:
-            return collection.find({"Author": name})
+            return collection.find({"author": name})
         except errors.ServerSelectionTimeoutError as err:
             print(f"Find_one() ERROR: {err}")
             return None
 
-    def insert_one_document(self, collection):
+    def find_document_one(self, collection, name):
         try:
-            candidate = {
-                "Author": "Stavros Solakis",
-                "title": "Neural Networks",
-                "email": "ssolakis@email.com",
-                "phone": "53453545345",
-                "Publications": [{
-                    "title": "Comparative Analysis of Machine Algorithms for Sentiment Analysis",
-                    "year": "1995"
-                    }, {
-                    "title": "pame",
-                    "year": "1995"
-                }]
-            }
+            return collection.find_one({"author": name})
+        except errors.ServerSelectionTimeoutError as err:
+            print(f"Find_one() ERROR: {err}")
+            return None
+    def insert_one_document(self, collection,candidate):
+        try:
             return collection.insert_one(candidate)
         except errors.ServerSelectionTimeoutError as err:
             print(f"Insert_one() ERROR: {err}")
