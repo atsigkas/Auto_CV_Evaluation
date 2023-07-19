@@ -5,7 +5,7 @@ candidate = {
                 "email": "a@a.gr",
                 "phone": "53453",
                 "researchgate_url": '',
-                "googleScholar_url": '',
+                "googlescholar_url": '',
                 "sematic_url": '',
                 "publication": [
                     {

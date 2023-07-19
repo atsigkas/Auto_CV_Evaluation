@@ -27,7 +27,7 @@ def fetch_data():
 
     if client:
         db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
-        #ok = mongo_handler.insert_one_document(col)
+        # TODO check theQuality cites
         '''
         TODO
         similar way when seaching the google with the name
@@ -40,7 +40,7 @@ def fetch_data():
         check email
         check number
         check papers
-        try and exeption
+        try and exception
         '''
         for profile in profiles:
             print(profile['Author'])
@@ -60,9 +60,22 @@ def fetch_data():
                         break
         if found is False:
             '''
-            Google search
-            populate the database 
+            Insert after the PDF
+            run each procedure
             '''
+        else:
+            '''
+                Check after if it is empty
+                researchgate_url
+                googleScholar_url
+                sematic_url
+                then run each procedure
+            '''
+        '''
+        In this point we have all the information  for the Candidate
+        
+        '''
+
 
     else:
         print("Client stance is invalid")
