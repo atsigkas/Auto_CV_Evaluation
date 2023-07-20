@@ -105,16 +105,16 @@ export default {
 <style>
 /* Define a default background image for larger screens */
 body {
-  background-image: url('C:\Users\anton\OneDrive\PC\local_repo_CV_evaluation\Auto_CV_Evaluation\my-vue-project\bck_image\neuro.jpg');
-  background-size: calc(100vw + 100px) calc(100vh + 100px); /* Adjust the additional px as needed */
+  background-image: url('~@/assets/bck_image/neuro.jpg');
+  background-size: calc(100vw + 100px) calc(100vh + 100px);
   background-repeat: no-repeat;
 }
 
 /* Use a media query to adjust the background image for smaller screens */
 @media (max-width: 768px) {
   body {
-    background-image: url('C:\Users\anton\OneDrive\PC\local_repo_CV_evaluation\Auto_CV_Evaluation\my-vue-project\bck_image\neuro.jpg');
-    background-size: calc(100vw + 100px) calc(100vh + 100px); /* Adjust the additional px as needed */
+    background-image: url('~@/assets/bck_image/neuro.jpg');
+    background-size: calc(100vw + 100px) calc(100vh + 100px);
     background-repeat: no-repeat;
   }
 }
