@@ -1,6 +1,7 @@
 <template>
   <div>
     <header>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
       <h1>
         <span class="blue">ev</span>
         <span class="bluegreen">AI</span>
@@ -33,7 +34,7 @@
           </svg>
           Upload PDF
         </button>
-        <p class="upload-info">Maximum file size: 5MB</p>
+        <p class="upload-info" style="font-family: 'Montserrat', sans-serif;">Maximum file size: 5MB</p>
       </div>
       <button class="submit-button" @click="submitForm">Submit</button>
     </div>
@@ -131,6 +132,8 @@ header {
 
 h1 {
   font-size: 24px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
 }
 
 .blue {
@@ -145,6 +148,8 @@ h2 {
   color: rgba(234, 182, 118, 0.8); /* Slightly transparent color for the h2 element */
   font-size: 18px;
   margin-top: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
 }
 
 main {
@@ -205,6 +210,7 @@ textarea {
   border-radius: 0 5px 5px 5px;
   background-color: rgba(0, 0, 0, 0.7); /* Transparent background color for the textarea */
   color: white; /* Set the text color to white */
+  font-family: 'Montserrat', sans-serif;
 }
 
 .buttons-container {
@@ -232,6 +238,7 @@ textarea {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-family: 'Montserrat', sans-serif;
 }
 
 .upload-button svg {
@@ -285,6 +292,7 @@ textarea {
   border-radius: 5px;
   position: relative; /* Add a position property to the button */
   overflow: hidden; /* Hide the glowing effect outside the button */
+  font-family: 'Montserrat', sans-serif;
 }
 
 /* Add the glowing effect for the button when hovering */
