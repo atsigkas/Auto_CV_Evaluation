@@ -2,7 +2,7 @@ from urllib.parse import urlencode
 from difflib import SequenceMatcher
 
 
-API_KEY = '  24431899-a58a-4bbf-adf4-c9331859fd00'
+API_KEY = '24431899-a58a-4bbf-adf4-c9331859fd00'
 
 
 def get_proxy_url( url, UsingProxy):
@@ -17,9 +17,17 @@ def get_proxy_url( url, UsingProxy):
 def similarity( a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-def extract_text(soup, selector, default=''):
+def extract_text(soup, selector):
     try:
-        result = soup.select_one(selector).text
-    except AttributeError:
-        result = default
+        element = soup.select_one(selector)
+        if element is not None:
+            result = element.text
+        else:
+            raise ValueError(f"No element found with selector '{selector}'.")
+    except AttributeError as e:
+        print(f"AttributeError encountered: {e}. Unable to extract text.")
+        raise
+    except Exception as e:
+        print(f"Unexpected error encountered: {e}. Unable to extract text.")
+        raise
     return result

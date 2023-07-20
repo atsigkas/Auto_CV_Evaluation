@@ -49,3 +49,13 @@ class MongoDBHandler:
         except errors.ServerSelectionTimeoutError as err:
             print(f"Insert_one() ERROR: {err}")
             return None
+
+    def close(self):
+        try:
+            if self.client:
+                self.client.close()
+                print(f"Connection to MongoDB server: {self.connection_string} has been closed.")
+            else:
+                print("No active connection found.")
+        except Exception as error:
+            print(f"Error occurred while trying to close the connection: {error}")

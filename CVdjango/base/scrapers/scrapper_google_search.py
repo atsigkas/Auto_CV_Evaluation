@@ -1,6 +1,6 @@
 from CVdjango.base.db.utils import *
-from CVdjango.base.scrapers.extract_info_publication_researchgate import *
-from CVdjango.base.scrapers.search_author_researchgate import *
+from CVdjango.base.scrapers.researchgate_scraper import *
+from CVdjango.base.scrapers.google_search import *
 
 
 

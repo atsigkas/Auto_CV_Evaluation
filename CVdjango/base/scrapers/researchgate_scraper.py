@@ -3,8 +3,8 @@ from bs4 import BeautifulSoup
 from CVdjango.base.scrapers.utils import *
 
 class ResearchGateScraper:
-    def __init__(self, candinate):
-        self.candinate=candinate
+    def __init__(self, candidate):
+        self.candidate = candidate
         self.researchgate_publications = []
 
     def find_all_papers(self, url, i):
@@ -46,7 +46,7 @@ class ResearchGateScraper:
             print("Problem")
 
     def check_papers(self):
-        for i,publication in enumerate(self.candinate['publication']):
+        for i,publication in enumerate(self.candidate['publication']):
             for researchgate_publication in self.researchgate_publications:
                 if similarity(publication['title'],researchgate_publication['title'])>0.8:
                     response = requests.get(get_proxy_url(researchgate_publication['url'],True))
@@ -56,7 +56,6 @@ class ResearchGateScraper:
                     # Create a BeautifulSoup object and specify the parser
                     soup = BeautifulSoup(webpage_html_content, "html.parser")
 
-                    # TODO try and Exception
                     '''
                     researchgate_publication['type'] = soup.select_one(".nova-legacy-e-badge.nova-legacy-e-badge--color-green.nova-legacy-e-badge--display-inline.nova-legacy-e-badge--luminosity-high.nova-legacy-e-badge--size-l.nova-legacy-e-badge--theme-solid.nova-legacy-e-badge--radius-m.research-detail-header-section__badge").text
                     researchgate_publication['year'] = soup.select_one("div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child").text
@@ -103,9 +102,9 @@ class ResearchGateScraper:
                     }
 
                     for key, selector in selectors.items():
-                        researchgate_publication[key] = extract_text(soup, selector, '')
+                        researchgate_publication[key] = extract_text(soup, selector)
 
-                    self.candinate['publication'][i]['researchgate_url']=researchgate_publication['url']
+                    self.candidate['publication'][i]['researchgate_url']=researchgate_publication['url']
 
                     print(researchgate_publication)
                     break
@@ -120,7 +119,7 @@ class ResearchGateScraper:
             print("Topics:", researchgate_publication['topics'])
             print("Type:", researchgate_publication['type'])
             print("-----")
-        for pub in self.candinate['publication']:
+        for pub in self.candidate['publication']:
             print("Title:", pub['title'])
             print("ResearchGate URL:", pub['researchgate_url'])
             print("Google Scholar URL:", pub['googleScholar_url'])
@@ -129,13 +128,13 @@ class ResearchGateScraper:
 
     def update_publication(self, col):
         try:
-            for i, pub in enumerate(self.candinate["publication"]):
+            for i, pub in enumerate(self.candidate["publication"]):
                 new_url = pub['researchgate_url']
                 print(new_url)
                 # Update only the 'publication' list
                 col.update_one(
                     # query
-                    {"_id": self.candinate['_id'], "publication.title": pub['title']},
+                    {"_id": self.candidate['_id'], "publication.title": pub['title']},
                     # Update: researchgate_url
                     {"$set": {"publication.$.researchgate_url": new_url}}
                 )
@@ -145,6 +144,6 @@ class ResearchGateScraper:
 
     def update_researchgate_publication(self, col):
         col.update_one(
-            {'_id': self.candinate['_id']},
+            {'_id': self.candidate['_id']},
             {'$push': {"researchgate": {"$each": self.researchgate_publications}}}
         )
