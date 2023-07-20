@@ -3,6 +3,7 @@ from CVdjango.base.scrapers.researchgate_scraper import *
 from CVdjango.base.scrapers.google_search import *
 from CVdjango.base.scrapers.researchgate import *
 from CVdjango.base.scrapers.scholar import *
+from CVdjango.base.scrapers.scholar_api import *
 
 
 mongo_handler = MongoDBHandler("localhost", 27017)
@@ -35,6 +36,8 @@ if client:
         print("The query didn't return any documents.")
     '''
     profile = mongo_handler.find_document_one(col, author)
+    a=ResearchGateScraper(profile)
+    a.check_papers()
     # Update scholargoogle
     ####get the scholar url
 

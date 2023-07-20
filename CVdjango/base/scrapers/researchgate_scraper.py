@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from CVdjango.base.scrapers.utils import *
 
+
 class ResearchGateScraper:
     def __init__(self, candidate):
         self.candidate = candidate
