@@ -9,18 +9,21 @@ import json
 import requests
 
 def extract_scholar_id(url):
-    # Parse the URL
-    parsed_url = urlparse(url)
+    try:
+        # Parse the URL
+        parsed_url = urlparse(url)
 
-    # Parse the query string
-    query_string = parse_qs(parsed_url.query)
+        # Parse the query string
+        query_string = parse_qs(parsed_url.query)
 
-    # Get the author ID
-    author_id = query_string['user'][0]
+        # Get the author ID
+        author_id = query_string['user'][0]
+    except Exception:
+        print(f"Error to extract author id this url: '{url}'")
 
     return author_id
 
-class ResearchGateScraper():
+class ScholarAPI:
     def __init__(self, candidate):
         self.candidate = candidate
         self.scholar_publications = []
@@ -28,7 +31,7 @@ class ResearchGateScraper():
 
     def check_papers(self):
         # search by unique author id
-        author_id = extract_scholar_id('https://scholar.google.com/citations?user=kJBcnigAAAAJ&hl=en')
+        author_id = extract_scholar_id(self.candidate['googlescholar_url'])
         author = scholarly.search_author_id(author_id)
 
         # fill author including their publications
@@ -63,7 +66,7 @@ class ResearchGateScraper():
                     scholar_publication["abstract"] = scholar_temp["bib"]["abstract"] if "abstract" in scholar_temp["bib"] else "Unknown"
                     scholar_publication["citation"] = scholar_temp["num_citations"] if "num_citations" in scholar_temp else "Unknow"
 
-                    self.candidate['publication'][i]['researchgate_url'] = scholar_publication['url']
+                    self.candidate['publication'][i]['googlescholar_url'] = scholar_publication['url']
 
                     break
 
@@ -79,7 +82,28 @@ class ResearchGateScraper():
         for pub in self.candidate['publication']:
             print("Title:", pub['title'])
             print("ResearchGate URL:", pub['researchgate_url'])
-            print("Google Scholar URL:", pub['googleScholar_url'])
+            print("Google Scholar URL:", pub['googlescholar_url'])
             print("Semantic URL:", pub['sematic_url'])
             print("-----")
 
+    def update_publication(self, col):
+        try:
+            for i, pub in enumerate(self.candidate["publication"]):
+                new_url = pub['googlescholar_url']
+                print(new_url)
+                # Update only the 'publication' list
+                col.update_one(
+                    # query
+                    {"_id": self.candidate['_id'], "publication.title": pub['title']},
+                    # Update: researchgate_url
+                    {"$set": {"publication.$.googlescholar_url": new_url}}
+                )
+        except Exception as error:
+            print(error)
+            print("Couldn't Update")
+
+    def update_researchgate_publication(self, col):
+        col.update_one(
+            {'_id': self.candidate['_id']},
+            {'$push': {"googlescholar": {"$each": self.scholar_publications}}}
+        )

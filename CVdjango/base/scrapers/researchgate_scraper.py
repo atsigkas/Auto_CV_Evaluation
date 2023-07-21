@@ -123,7 +123,7 @@ class ResearchGateScraper:
         for pub in self.candidate['publication']:
             print("Title:", pub['title'])
             print("ResearchGate URL:", pub['researchgate_url'])
-            print("Google Scholar URL:", pub['googleScholar_url'])
+            print("Google Scholar URL:", pub['googlescholar_url'])
             print("Semantic URL:", pub['sematic_url'])
             print("-----")
 

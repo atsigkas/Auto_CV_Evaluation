@@ -9,7 +9,7 @@ from CVdjango.base.scrapers.scholar_api import *
 mongo_handler = MongoDBHandler("localhost", 27017)
 client = mongo_handler.connect()
 # TODO SOS
-author = 'Athanasios Anagnostis'
+author = 'Serafeim Moustakidis'
 
 if client:
     db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
@@ -17,27 +17,31 @@ if client:
     # check which url is empty
     # if it is empty then we have to run it
     # TODO Insert after the PDF
-    '''
+
     # ok = mongo_handler.insert_one_document(col)
     profile = mongo_handler.find_document_one(col, author)
-    if profile:
-        print("The query returned some Documents.")
-        #update ResearchGate
 
+    if profile:
+        print(f"The query returned some Documents for the Candidate '{profile['author']}'.")
+        #Update Candidate researchGate profile link
+        '''
         researchgate = Researchgate(profile, "site:researchgate.net")
         researchgate.search_author("researchgate.net/publication")
         researchgate.update_candidate(col, "researchgate_url")
+        '''
 
-        #update ScholarGoogle
-        researchgate = Scholar(profile, "site:scholar.google.com")
-        researchgate.search_author("scholar.google.com/citations")
-        researchgate.update_candidate(col, "googlescholar_url")
+        #Update Candidate scholar profile link
+        scholargoogle = Scholar(profile, "site:scholar.google.com")
+        scholargoogle.search_author("scholar.google.com/citations")
+        scholargoogle.update_candidate(col, "googlescholar_url")
+
     else:
         print("The query didn't return any documents.")
-    '''
-    profile = mongo_handler.find_document_one(col, author)
-    a=ResearchGateScraper(profile)
-    a.check_papers()
+
+    scholar_api=ScholarAPI(profile)
+    scholar_api.check_papers()
+    scholar_api.update_publication(col)
+    scholar_api.update_researchgate_publication(col)
     # Update scholargoogle
     ####get the scholar url
 
@@ -49,5 +53,6 @@ if client:
     researchgate.update_publication(col)
     researchgate.update_researchgate_publication(col)
     '''
+
 
 
