@@ -12,18 +12,18 @@
     <main>
       <div class="job-container">
         <div class="job-title-container">
-          <label for="job-title">Job Title:</label>
+          <label for="job-title">Job Title</label>
           <textarea id="job-title" v-model="jobTitle" class="job-title-textarea"></textarea>
         </div>
         <div class="job-description-container">
-          <label for="job-description">Job Description:</label>
+          <label for="job-description">Job Description</label>
           <textarea id="job-description" v-model="jobDescription" class="job-description-textarea"></textarea>
         </div>
       </div>
     </main>
-    <div class="buttons-container">
+    <div class="buttons-container" style="display: flex; gap: 20px;">
       <div class="upload-button-container">
-        <input type="file" @change="handleFileChange" accept=".pdf" style="display: none;" ref="fileInput" />
+        <input type="file" @change="handleFileChange" accept=".pdf" multiple style="display: none;" ref="fileInput" />
         <button class="upload-button" @click="openFileInput">
           <svg
             xmlns="http://www.w3.org/2000/svg" 
@@ -34,20 +34,40 @@
           </svg>
           Upload PDF
         </button>
-        <p class="upload-info" style="font-family: 'Montserrat', sans-serif;">Maximum file size: 5MB</p>
+        <button class="toggle-sidebar-button" @click="toggleSidebar">Toggle Sidebar</button>
       </div>
-      <button class="submit-button" @click="submitForm">Submit</button>
+      <div class="submit-container"> <!-- Wrap the submit button in a container -->
+        <button class="submit-button" @click="submitForm">Submit</button>
+      </div>
+    </div>
+    <div class="file-size-info">
+      Max File Size 5MB
     </div>
     <ResultPopup v-if="showPopup" :results="results" @close="closePopup" />
   </div>
+  <div class="uploaded-files">
+    <h3>Uploaded PDF Files:</h3>
+    <ul>
+      <li v-for="(file, index) in pdfFiles" :key="index">{{ file.name }}</li>
+    </ul>
+  </div>
+  <SidebarContainer
+  ref="sidebarContainer"
+  v-if="showSidebar"
+  :pdfFiles="pdfFiles"
+  @update-pdf-files="updatePdfFiles"
+  />
 </template>
 
+
 <script>
-import ResultPopup from "./ResultPopup.vue";
+import ResultPopup from "./components/ResultPopup.vue";
+import SidebarContainer from "./components/SidebarContainer.vue"; 
 
 export default {
   components: {
     ResultPopup,
+    SidebarContainer 
   },
   data() {
     return {
@@ -56,6 +76,8 @@ export default {
       jobDescription: "",
       showPopup: false, // Track whether the popup should be shown
       results: [], // Store the list of results to be shown in the popup
+      pdfFiles: [],
+      showSidebar: false,
     };
   },
   methods: {
@@ -63,9 +85,18 @@ export default {
       this.$refs.fileInput.click();
     },
     handleFileChange(event) {
-      const file = event.target.files[0];
-      // Do something with the selected file (e.g., store it in a variable or upload it)
-      console.log("Selected file:", file);
+      const files = event.target.files;
+      const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+
+      // Append the new PDF files to the existing list
+      this.pdfFiles = [...this.pdfFiles, ...pdfFiles];
+
+      // Use $nextTick to ensure the DOM has been updated before accessing refs
+      this.$nextTick(() => {
+        if (this.$refs.sidebarContainer) {
+          this.$refs.sidebarContainer.updateLocalPdfFiles(this.pdfFiles);
+        }
+      });
     },
     submitForm() {
       // Do any processing you need to get the list of results
@@ -98,6 +129,12 @@ export default {
     closePopup() {
       // Close the popup when the user clicks the "Close" button
       this.showPopup = false;
+    },
+    toggleSidebar() {
+      this.showSidebar = !this.showSidebar;
+    },
+    updatePdfFiles(pdfFiles) {
+    this.pdfFiles = pdfFiles;
     },
   }
 };
@@ -164,6 +201,55 @@ main {
   border-radius: 10px; /* Add rounded corners to the main section as well */
 }
 
+.uploaded-files {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.7);
+  border-radius: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.uploaded-files h3 {
+  color: rgba(234, 182, 118, 0.8);
+  font-size: 18px;
+}
+
+.uploaded-files ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.uploaded-files li {
+  color: white;
+  margin-bottom: 5px;
+}
+
+.toggle-sidebar-button {
+  margin-bottom: 5px;
+  background-color: transparent;
+  color: white;
+  padding: 10px 20px;
+  border: 2px solid rgba(234, 182, 118, 0.8);
+  border-radius: 20px; /* Increase the border radius for rounded corners */
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toggle-sidebar-button:hover {
+  background-color: rgba(234, 182, 118, 0.4);
+}
+
 .job-container {
   display: flex;
   flex-direction: column;
@@ -179,8 +265,9 @@ main {
 
 .job-title-textarea {
   height: 20px; /* Set the desired height for the job title textarea */
+  width: 500px;
+  resize: none;
 }
-
 
 .job-description-container {
   text-align: left;
@@ -191,33 +278,35 @@ main {
 }
 
 .job-description-textarea {
-  height: 100px; /* Set the desired height for the job description textarea */
+  height: 150px; /* Set the desired height for the text areas */
+  width: 500px;
+  resize: none; /* Set the desired height for the job description textarea */
 }
-
 
 label {
   border-radius: 5px 0 0 0;
   padding: 5px 10px;
   color: white;
   margin-bottom: 5px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
 }
 
 textarea {
   width: 300px;
   height: 50px;
-  border: 2px solid rgba(234, 182, 118, 0.5);
+  border: 1px solid rgba(234, 182, 118, 0.5);
   padding: 5px;
-  border-radius: 0 5px 5px 5px;
-  background-color: rgba(0, 0, 0, 0.7); /* Transparent background color for the textarea */
-  color: white; /* Set the text color to white */
+  border-radius: 10px; /* Set the same border-radius for all four corners */
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
   font-family: 'Montserrat', sans-serif;
 }
 
 .buttons-container {
   margin-top: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  justify-content: center; /* Center the buttons horizontally */
 }
 
 .upload-button-container {
@@ -228,22 +317,27 @@ textarea {
 
 .upload-button {
   margin-bottom: 5px;
-  background-color: #333;
+  background-color: transparent;
   color: white;
   padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  position: relative; /* Add a position property to the button */
-  overflow: hidden; /* Hide the glowing effect outside the button */
+  border: 2px solid rgba(234, 182, 118, 0.8);
+  border-radius: 20px; /* Increase the border radius for rounded corners */
+  position: relative;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 8px;
   font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .upload-button svg {
   width: 20px;
   height: 20px;
+  fill: white; /* Set the color of the SVG image to white */
 }
 
 /* Add the glowing effect for the button when hovering */
@@ -269,8 +363,7 @@ textarea {
 .upload-button::before {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
+  bottom: 0;
   width: 100%;
   height: 100%;
   border: 2px solid rgba(234, 182, 118, 0.8);
@@ -284,18 +377,40 @@ textarea {
   opacity: 1; /* Make the glowing effect visible when hovering */
 }
 
-.submit-button {
-  background-color: #333;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  position: relative; /* Add a position property to the button */
-  overflow: hidden; /* Hide the glowing effect outside the button */
-  font-family: 'Montserrat', sans-serif;
+.submit-container {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  border-radius: 100px; /* Increase the border radius to make it round */
+  padding: 5px; /* Adjust the padding to change the size */
+  display: flex;
+  align-items: center;
 }
 
-/* Add the glowing effect for the button when hovering */
+.submit-button {
+  background-color: rgba(234, 182, 118, 0.2);
+  color: white;
+  padding: 10px 20px;
+  font-size: 14px; /* Adjust the font size to match the upload button */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  white-space: nowrap; /* Prevent text from wrapping */
+  border: none;
+  border-radius: 20px; /* Keep the border radius for the button */
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  height: 40px;
+  width: 150px;
+  transition: background-color 0.3s ease-out;
+}
+
+.submit-button:hover {
+  background-color: rgba(234, 182, 118, 0.4); /* Change to a brighter background color on hover */
+}
+
+/* Adjust the glowing effect for the button and container when hovering */
 .submit-button::after {
   content: "";
   position: absolute;
@@ -303,34 +418,77 @@ textarea {
   left: -50%;
   width: 200%;
   height: 200%;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(234, 182, 118, 0.1);
   border-radius: 50%;
   opacity: 0;
   transition: opacity 0.5s ease-out;
-  pointer-events: none; /* Ensure the glowing effect doesn't interfere with the button click */
+  pointer-events: none;
+  animation: glowing-border 2s linear infinite;
 }
 
+/* Adjust the glowing effect for the submit button when hovering */
 .submit-button:hover::after {
-  opacity: 1; /* Make the glowing effect visible when hovering */
+  opacity: 1;
 }
 
-/* Add the glowing effect for the button borders when hovering */
+/* Add the glowing effect for the submit button borders when hovering */
 .submit-button::before {
   content: "";
   position: absolute;
-  bottom: 0; /* Adjust the glowing effect position for the lower border */
-  right: 0;
-  width: 100%;
-  height: 100%;
+  bottom: -5px; /* Adjust the glowing effect position for the lower border */
+  right: -5px;
+  width: calc(100% + 10px); /* Extend the glowing effect outside the button */
+  height: calc(100% + 10px);
   border: 2px solid rgba(234, 182, 118, 0.8);
-  border-radius: 5px;
+  border-radius: 20px; /* Increase the border radius to make it round */
   opacity: 0;
   animation: glow-border 1.5s linear infinite;
-  pointer-events: none; /* Ensure the glowing effect doesn't interfere with the button click */
+  pointer-events: none;
 }
 
-.submit-button:hover::before {
-  opacity: 1; /* Make the glowing effect visible when hovering */
+/* Adjust the glowing effect for the submit button borders when hovering */
+.submit-container {
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  border-radius: 100px; /* Increase the border radius to make it round */
+  padding: 5px; /* Adjust the padding to change the size */
+  display: flex;
+  align-items: center;
+}
+
+.submit-container::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  border: 2px solid rgba(234, 182, 118, 0.8); /* Apply the glowing effect to the borders */
+  border-radius: 100px; /* Increase the border radius to make it round */
+  opacity: 0;
+  animation: glowing-border 1.5s linear infinite;
+  pointer-events: none;
+}
+
+/* Adjust the glowing effect for the submit button container borders when hovering */
+.submit-container:hover::before {
+  opacity: 1;
+}
+
+@keyframes glowing-border {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
 }
 
 @keyframes glow-border {
@@ -352,5 +510,16 @@ textarea {
   color: rgba(234, 182, 118, 0.8);
   font-size: 14px;
   margin-top: 5px;
+}
+
+.file-size-info {
+  color: rgba(234, 182, 118, 0.3); /* Set the desired color for the text */
+  font-size: 13px; /* Set the desired font size for the text */
+  text-align: center; /* Center the text horizontally */
+  margin-top: 10px; /* Add some top margin to separate it from the buttons */
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  margin-left: -210px; /* Add left margin to move it a bit to the left */
+  margin-top: -1px; 
 }
 </style>

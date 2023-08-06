@@ -76,12 +76,15 @@ h2 {
   text-align: center;
   font-size: 24px;
   margin-bottom: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
 }
 
 hr {
   border: none;
   border-top: 1px solid #fff; /* Set the border color to white */
   margin: 10px 0;
+  font-weight: bold; /* Make the text bold */
 }
 
 /* Style the buttons container */
@@ -102,6 +105,8 @@ hr {
   position: absolute;
   top: 10px;
   right: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
 }
 
 /* Add the glowing effect for the button when hovering */
@@ -146,6 +151,8 @@ hr {
 .extract-button {
   background-color: #333;
   color: white;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
   padding: 10px 20px;
   border: none;
   border-radius: 5px;
@@ -160,6 +167,8 @@ hr {
   left: -50%;
   width: 200%;
   height: 200%;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold; /* Make the text bold */
   background: rgba(255, 255, 255, 0.1);
   border-radius: 50%;
   opacity: 0;
@@ -215,6 +224,7 @@ hr {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  font-family: 'Montserrat', sans-serif;
 }
   </style>
   
