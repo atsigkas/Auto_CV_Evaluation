@@ -1,7 +1,8 @@
 from CVdjango.base.db.utils import *
 
+title="Fully automated identification of skin morphology in raster‐scan optoacoustic mesoscopy using artificial intelligence"
 candidate = {
-                "author": "Athanasios Anagnostis",
+                "author": "Serafeim Moustakidis",
                 "email": "a@a.gr",
                 "phone": "53453",
                 "researchgate_url": '',
@@ -9,13 +10,14 @@ candidate = {
                 "sematic_url": '',
                 "publication": [
                     {
-                        "title":'Smart Technologies for Sustainable Water Management: An Urban Analysis',
+                        "title": title,
                         "researchgate_url": '',
-                        "googleScholar_url": '',
+                        "googlescholar_url": '',
                         "sematic_url": ''
                     }
                 ],
-                "researchgate": []
+                "researchgate": [],
+                "googlescholar": []
             }
 mongo_handler = MongoDBHandler("localhost", 27017)
 client = mongo_handler.connect()
