@@ -49,6 +49,7 @@
   ref="sidebarContainer"
   v-if="showSidebar"
   :pdfFiles="pdfFiles"
+  :greenIcon="greenIcon" 
   @update-pdf-files="updatePdfFiles"
   />
 </template>
@@ -68,29 +69,39 @@ export default {
       cvText: "",
       jobTitle: "",
       jobDescription: "",
-      showPopup: false, // Track whether the popup should be shown
-      results: [], // Store the list of results to be shown in the popup
+      showPopup: false,
+      results: [],
       pdfFiles: [],
       showSidebar: false,
+      greenIcon: false, // Add this property
     };
   },
   methods: {
     openFileInput() {
       this.$refs.fileInput.click();
     },
-    handleFileChange(event) {
+    async handleFileChange(event) {
       const files = event.target.files;
       const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
 
-      // Append the new PDF files to the existing list
-      this.pdfFiles = [...this.pdfFiles, ...pdfFiles];
+      if (pdfFiles.length > 0) {
+        this.greenIcon = true; // Set the icon color to green
 
-      // Use $nextTick to ensure the DOM has been updated before accessing refs
-      this.$nextTick(() => {
-        if (this.$refs.sidebarContainer) {
-          this.$refs.sidebarContainer.updateLocalPdfFiles(this.pdfFiles);
-        }
-      });
+        // Add a delay to ensure the animation occurs only after the file is uploaded
+        await new Promise(resolve => setTimeout(resolve, 2000)); // Delay for 500ms
+
+        this.greenIcon = false; // Reset the icon color
+
+        // Append the new PDF files to the existing list
+        this.pdfFiles = [...this.pdfFiles, ...pdfFiles];
+
+        // Use $nextTick to ensure the DOM has been updated before accessing refs
+        this.$nextTick(() => {
+          if (this.$refs.sidebarContainer) {
+            this.$refs.sidebarContainer.updateLocalPdfFiles(this.pdfFiles);
+          }
+        });
+      }
     },
     submitForm() {
       // Do any processing you need to get the list of results
@@ -515,5 +526,10 @@ textarea {
   font-weight: 500;
   margin-left: -210px; /* Add left margin to move it a bit to the left */
   margin-top: -1px; 
+}
+
+.pdf-icon.green-icon {
+  content: url('~@/assets/pdf-image.svg'); /* Replace with the actual path to your white PDF icon */
+  transition: none; /* Remove the transition */
 }
 </style>

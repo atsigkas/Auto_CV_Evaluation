@@ -2,14 +2,16 @@
   <div class="sidebar-container">
     <div :class="sidebarClass">
       <div class="pdf-icon-container">
-        <h3 :class="fileCountClass">Uploaded Files</h3>
+        <h3 >Uploaded Files</h3>
         <div class="file-count-container">
-          <img
-            src="@/assets/pdf-image.svg"
-            alt="PDF Icon"
-            class="pdf-icon"
-            :class="pdfIconClass"
-          />
+          <div class="pdf-icon" :class="{ 'green-icon': greenIcon }">
+            <img
+              src="@/assets/pdf-image.svg"
+              alt="PDF Icon"
+              class="pdf-icon"
+              :class="{ 'green-icon': greenIcon, pdfIcon: true }"
+            />
+          </div>
           <span class="file-count">{{ localPdfFiles.length }}</span>
         </div>
       </div>
@@ -49,6 +51,7 @@ export default {
       type: Array,
       required: true,
     },
+    greenIcon: Boolean, // Add this line
   },
   data() {
     return {
@@ -62,7 +65,7 @@ export default {
   computed: {
     pdfIconClass() {
       const iconColor = this.localPdfFiles.length > this.pdfFiles.length ? 'green' : 'red';
-      return `pdf-icon ${iconColor}-icon`; // Replace pdf-icon with the base class of your icon
+      return `pdf-icon ${iconColor}-icon`;
     },
     sidebarClass() {
       return {
@@ -125,7 +128,7 @@ export default {
       this.showConfirmation = false;
       this.removeIndex = null;
     },
-        updatePdfFiles() {
+    updatePdfFiles() {
       this.$emit('update-pdf-files', this.localPdfFiles);
     },
     cancelRemove() {
@@ -179,22 +182,24 @@ export default {
 .file-count-container {
   display: flex;
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 4%;
 }
 
 .file-count {
   color: rgba(15, 226, 247, 0.6);
   font-weight: bold;
-  font-size: 25px;
+  font-size: 30px;
   font-family: 'Montserrat', sans-serif;
   margin-left: 8px;
+  padding-left: 1%;
 }
 
 .pdf-icon {
+  content: url('~@/assets/pdf-image.svg'); /* Replace with the actual path to your white PDF icon */
+  filter: invert(100%);
   width: 30px;
   height: 30px;
-  filter: invert(100%);
-  padding: auto;
+  padding-right: 1%;
 }
 
 .sidebar.hidden {
@@ -365,14 +370,9 @@ export default {
     box-shadow: 0 0 15px white;
   }
 }
-
-.green-icon {
-  /* Add your styles for the green icon here */
-  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(120deg);
+.pdf-icon.green-icon {
+  filter: invert(90%) sepia(1000%) saturate(1000%) hue-rotate(30deg);
+  transition: filter 1s ease-in-out; /* Add a transition for smooth color change */
 }
 
-.red-icon {
-  /* Add your styles for the red icon here */
-  filter: invert(50%) sepia(100%) saturate(500%) hue-rotate(0deg);
-}
 </style>
