@@ -45,12 +45,6 @@
     </div>
     <ResultPopup v-if="showPopup" :results="results" @close="closePopup" />
   </div>
-  <div class="uploaded-files">
-    <h3>Uploaded PDF Files:</h3>
-    <ul>
-      <li v-for="(file, index) in pdfFiles" :key="index">{{ file.name }}</li>
-    </ul>
-  </div>
   <SidebarContainer
   ref="sidebarContainer"
   v-if="showSidebar"
