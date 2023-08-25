@@ -1,15 +1,15 @@
 <template>
-  <div class="sidebar-container">
+  <div class="sidebar-container" ref="sidebarContainer">
     <div :class="sidebarClass">
       <div class="pdf-icon-container">
         <h3 >Uploaded Files</h3>
         <div class="file-count-container">
-          <div class="pdf-icon" :class="{ 'green-icon': greenIcon }">
+          <div class="pdf-icon" :class="{ 'green-icon': greenIcon, 'animate-removed': animateRemoved, 'animate-remove': animateRemove }">
             <img
               src="@/assets/pdf-image.svg"
               alt="PDF Icon"
               class="pdf-icon"
-              :class="{ 'green-icon': greenIcon, pdfIcon: true }"
+              :class="{ 'green-icon': greenIcon, pdfIcon: true, 'animate-removed': animateRemoved, 'animate-remove': animateRemove }"
             />
           </div>
           <span class="file-count">{{ localPdfFiles.length }}</span>
@@ -60,6 +60,7 @@ export default {
       dontShowAgain: false,
       removeIndex: null,
       showSidebar: false,
+      animateRemove: false,
     };
   },
   computed: {
@@ -74,29 +75,35 @@ export default {
       };
     },
   },
-  created() {
-    // Set dontShowAgain to false when the component is created
+  mounted() { // Use mounted instead of created
+    // Set dontShowAgain to false when the component is mounted
     this.dontShowAgain = false;
     this.showConfirmation = false; // Ensure that showConfirmation is set to false
     // Check if there is a value in localStorage and update dontShowAgain accordingly
     console.log('dontShowAgain:', this.dontShowAgain);
 
     // Event listener to close sidebar and confirmation messages when clicking outside
-    document.addEventListener('click', (event) => {
-      if (!this.$el.contains(event.target)) {
-        this.showSidebar = false;
-        this.showConfirmation = false;
-        this.removeIndex = null;
-      }
-    });
+    document.addEventListener('click', this.handleOutsideClick);
+  },
+  beforeUnmount() {
+    // Remove the event listener when the component is destroyed
+    document.removeEventListener('click', this.handleOutsideClick);
   },
   methods: {
     removeFile(index) {
       if (index !== null && index < this.localPdfFiles.length) {
-        console.log('Removing file:', this.localPdfFiles[index].name);
-        this.localPdfFiles.splice(index, 1);
-        console.log('Remaining files:', this.localPdfFiles);
-        this.updatePdfFiles();
+        // Trigger the animation
+        this.animateRemoved = true;
+        this.animateRemove = true; // Set animateRemove to true
+
+        // Use setTimeout to reset the animation after a delay
+        setTimeout(() => {
+          this.animateRemoved = false;
+          this.animateRemove = false; // Set animateRemove to true
+          // Remove the file from the list
+          this.localPdfFiles.splice(index, 1);
+          this.updatePdfFiles();
+        }, 2000); // Set the delay to 2000ms (2 seconds)
       }
     },
     // Method to update the localPdfFiles array
@@ -119,8 +126,7 @@ export default {
 
       if (this.dontShowAgain) {
         this.$emit('update-pdf-files', this.localPdfFiles);
-        this.removeFile(this.removeIndex); // Call the removeFile method directly
-        this.showConfirmation = false;
+        this.showConfirmation = false; // Simply hide the confirmation box
       }
     },
     confirmRemove() {
@@ -134,6 +140,15 @@ export default {
     cancelRemove() {
       this.showConfirmation = false;
       this.removeIndex = null;
+    },
+    handleOutsideClick(event) {
+      // Check if the clicked element is outside the sidebar container
+      const sidebarContainer = this.$refs.sidebarContainer;
+      if (!sidebarContainer.contains(event.target)) {
+        this.showSidebar = false;
+        this.showConfirmation = false;
+        this.removeIndex = null;
+      }
     },
   },
 };
@@ -371,8 +386,31 @@ export default {
   }
 }
 .pdf-icon.green-icon {
-  filter: invert(90%) sepia(1000%) saturate(1000%) hue-rotate(30deg);
-  transition: filter 1s ease-in-out; /* Add a transition for smooth color change */
+  animation: glowing-green-animation 2.5s; /* Set animation duration to 2 seconds */
+  transition: filter 3s ease-in-out; /* Add a transition for smooth color change */
+}
+
+@keyframes glowing-green-animation {
+  0% {
+    filter: invert(100%)
+  }
+  50% {
+    filter:  invert(0%); /* Rotate color halfway */
+  }
+  70% {
+    filter: invert(60%) sepia(2000%) saturate(1000%) hue-rotate(20deg) drop-shadow(1px 1px 0 green);
+  }
+  80% {
+    filter: invert(80%) sepia(2000%) saturate(1000%) hue-rotate(20deg) drop-shadow(1px 1px 0 green);
+  }
+  100% {
+    filter: invert(100%) sepia(2000%) saturate(1000%) hue-rotate(20deg) drop-shadow(1px 1px 0 green) brightness(100%);
+  }
+}
+
+.animate-remove {
+  animation: colorChange 2s; /* Apply the same color change animation */
+  transition: filter 3s ease-in-out; /* Add a transition for smooth color change */
 }
 
 </style>
