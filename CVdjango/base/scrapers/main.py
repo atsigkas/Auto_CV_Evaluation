@@ -50,9 +50,9 @@ def fetch_data():
             if found is True:
                 break
             print(profile['Author'])
-            for publication in profile['Publications']:
-                if found is True:
-                    break
+                for publication in profile['Publications']:
+                    if found is True:
+                        break
                 for paper in papers:
                     if similarity(publication['title'], paper) > 0.9:
                         print(f'Found the paper,so the Profile exist')

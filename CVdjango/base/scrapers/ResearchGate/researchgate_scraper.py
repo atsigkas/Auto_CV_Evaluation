@@ -11,11 +11,13 @@ class ResearchGateScraper:
     def find_all_papers(self, url, i):
         try:
             print('Page:'+str(i))
+            print(f"Profile Author in ResearchGate:{url}")
             response = requests.get(get_proxy_url(url + '/' + str(i), True))
             soup = BeautifulSoup(response.text, 'html.parser')
             links = soup.find_all('a', class_='nova-legacy-e-link nova-legacy-e-link--color-inherit nova-legacy-e-link--theme-bare',href=True)
             for link in links:
                 href = link.get('href')
+                print(href)
                 if "researchgate.net/publication" in href:
                     publication = {
                         "url": href,
@@ -126,7 +128,7 @@ class ResearchGateScraper:
             print("Google Scholar URL:", pub['googlescholar_url'])
             print("Semantic URL:", pub['sematic_url'])
             print("-----")
-
+        self.candidate['researchgate'] = self.researchgate_publications
     def update_publication(self, col):
         try:
             for i, pub in enumerate(self.candidate["publication"]):
@@ -148,3 +150,6 @@ class ResearchGateScraper:
             {'_id': self.candidate['_id']},
             {'$push': {"researchgate": {"$each": self.researchgate_publications}}}
         )
+
+    def insert_researchgate_candidate(self, col):
+        col.insert_one(self.candidate)

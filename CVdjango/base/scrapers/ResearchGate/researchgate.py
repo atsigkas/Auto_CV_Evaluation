@@ -42,7 +42,7 @@ class Researchgate(GoogleSearch):
         similarity_table.sort(key=lambda x: x[1], reverse=True)
         print(similarity_table)
         for url, score in similarity_table:
-            if score > 0.8:
+            if score > 0.7:
                 try:
                     self.get_and_apply(url, self.search)
                     return self.candidate

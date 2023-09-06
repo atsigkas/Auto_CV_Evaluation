@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from .db import utils
-from .scrapers import scraper_google_scolar
+from .scrapers import main
 
 # Create your views here.
 
