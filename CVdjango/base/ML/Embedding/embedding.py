@@ -18,21 +18,22 @@ def publications_specter_embedding(author):
         # author have the stuff inside
         embeddings = []
         for pub in author["publication"]:
+            print("####### Embedding ############")
             # Loop through each source array and try to find a match
-            for source_name in ['researchgate']:  # Add other sources as needed
+            for source_name in ['researchgate','googlescholar']:  # Add other sources as needed
                 source_item = None
                 source_item_index = None
 
                 for index, item in enumerate(author.get(source_name, [])):
-                    print(f"Checking item: {item}")
                     if item['url'] == pub.get(f"{source_name}_url"):
                         source_item = item
                         source_item_index = index
+                        print(f"Found in the Database {item['url']}")
                         break
 
                 if source_item:
                     if not source_item.get('embedding', []):
-                        embedding = specter_embedding(pub['title'], '')
+                        embedding = specter_embedding(pub['title'], pub['abstract'])
                         pub["embedding"] = embedding
                         print(embedding)
                         if source_item_index is not None:
@@ -42,19 +43,6 @@ def publications_specter_embedding(author):
         print(error)
 
 def update_embedding(authors_or_author, col):
-    # Check if the input is a list of dictionaries (for multiple authors)
-    if isinstance(authors_or_author, list):
-        for author in authors_or_author:
-            try:
-                #updated_author = publications_specter_embedding(author)
-                col.update_one({"_id": authors_or_author['_id']}, {
-                    "$set": {"publication": authors_or_author['publication'],
-                             "researchgate": authors_or_author.get('researchgate', [])}})
-            except Exception as e:
-                print(f"An error occurred: {e}")
-
-    # Check if the input is a single dictionary (for one author)
-    elif isinstance(authors_or_author, dict):
         try:
             print(authors_or_author.get('publication'))
             print(authors_or_author['publication'])
@@ -63,12 +51,9 @@ def update_embedding(authors_or_author, col):
                 {"_id": authors_or_author['_id']},
                 {"$set": {
                     "publication": authors_or_author['publication'],
-                    "researchgate": authors_or_author.get('researchgate', [])
+                    "researchgate": authors_or_author.get('researchgate', []),
+                    "googlescholar": authors_or_author.get('googlescholar', [])
                 }}
             )
         except Exception as e:
             print(f" update_embedding - An error occurred: {e}")
-
-    else:
-        print(
-            "Invalid input type. Expecting a dictionary (for a single author) or a list of dictionaries (for multiple authors).")

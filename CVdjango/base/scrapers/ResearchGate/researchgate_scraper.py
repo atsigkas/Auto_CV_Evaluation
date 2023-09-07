@@ -108,6 +108,7 @@ class ResearchGateScraper:
                         researchgate_publication[key] = extract_text(soup, selector)
 
                     self.candidate['publication'][i]['researchgate_url']=researchgate_publication['url']
+                    self.candidate['publication'][i]['abstract'] = researchgate_publication['abstract']
 
                     print(researchgate_publication)
                     break
@@ -133,13 +134,14 @@ class ResearchGateScraper:
         try:
             for i, pub in enumerate(self.candidate["publication"]):
                 new_url = pub['researchgate_url']
-                print(new_url)
+                abstract = pub['abstract']
                 # Update only the 'publication' list
                 col.update_one(
                     # query
                     {"_id": self.candidate['_id'], "publication.title": pub['title']},
                     # Update: researchgate_url
-                    {"$set": {"publication.$.researchgate_url": new_url}}
+                    {"$set": {"publication.$.researchgate_url": new_url}
+                    }
                 )
         except Exception as error:
             print(error)

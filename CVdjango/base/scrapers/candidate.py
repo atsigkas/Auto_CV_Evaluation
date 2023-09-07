@@ -9,3 +9,14 @@ class Candidate:
 
     def insert_candidate(self, col):
         col.insert_one(self.candidate)
+
+    def update_candidate(self, col):
+        col.update_one(
+            {"_id": self.candidate['_id']},
+            {"$set": {
+                "publication": self.candidate['publication'],
+                "researchgate": self.candidate.get('researchgate', []),
+                "googlescholar": self.candidate.get('googlescholar', [])
+        }}
+        )
+

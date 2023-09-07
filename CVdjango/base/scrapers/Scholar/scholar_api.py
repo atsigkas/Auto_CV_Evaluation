@@ -57,7 +57,8 @@ class ScholarAPI:
                         "source": "AUTHOR_PUBLICATION_ENTRY",
                         "author_pub_id": scholar_publication['url'],
                         "bib": {
-                            "title": scholar_publication['title']
+                            "title": scholar_publication['title'],
+                            "abstract": scholar_publication['abstract']
                         }
                     }
                     scholarly.fill(scholar_temp)
