@@ -13,26 +13,45 @@ def proxy():
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
+#title="SVM-based fuzzy decision trees for classification of high spatial resolution remote sensing images"
+#title2="Right Ventricular Volume Prediction by Feature Tokenizer Transformer-Based Regression of 2D Echocardiography Small-Scale Tabular Data"
+title='Uncovering the Black Box of Coronary Artery Disease Diagnosis: The Significance of Explainability in Predictive Models'
+title2='Classification models for assessing coronary artery disease instances using clinical and biometric data: an explainable man-in-the-loop approach'
+candidate = {
+                "author": "Elpiniki I Papageorgiou",
+                "email": "a@a.gr",
+                "phone": "53453",
+                "researchgate_url": '',
+                "googlescholar_url": '',
+                "sematic_url": '',
+                "publication": [
+                    {
+                        "title": title,
+                        "abstract":'',
+                        "researchgate_url": '',
+                        "googlescholar_url": '',
+                        "sematic_url": '',
+                    },
+                    {
+                        "title": title2,
+                        "abstract":'',
+                        "researchgate_url": '',
+                        "googlescholar_url": '',
+                        "sematic_url": '',
+                        "embedding" : ''
+                    }
+                ]
+            }
 
 def fetch_data():
 
-    author = 'Stravros Solakis'
-    papers = ['A Comparative Analysis of Machine Learning Algorithms for Sentiment Analysis',
-              'Emerging Trends in Cybersecurity Threats and Countermeasures']
-    email ='ssolakis@email.com'
-    phone ='3453543354'
     # Search in Database
     mongo_handler = utils.MongoDBHandler("localhost", 27017)
     client = mongo_handler.connect()
 
     if client:
         db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
-        # TODO check theQuality cites
-        '''
-        TODO
-        similar way when seaching the google with the name
-        '''
-        profiles = mongo_handler.find_document(col, author)
+        profiles = mongo_handler.find_document_one(col, "author",candidate["author"])
         print(f"Find : {profiles}")
 
         found = False
@@ -42,22 +61,20 @@ def fetch_data():
         check papers
         try and exception
         '''
-        for profile in profiles:
-            print(profile['Author'])
-            if profile['email']==email or profile['phone']==phone:
-                found=True
-                break
+
+        print(profile['Author'])
+        if profile['email']==email or profile['phone']==phone:
+            found=True
+            break
+        print(profile['Author'])
+        for publication in profile['Publications']:
             if found is True:
                 break
-            print(profile['Author'])
-                for publication in profile['Publications']:
-                    if found is True:
-                        break
-                for paper in papers:
-                    if similarity(publication['title'], paper) > 0.9:
-                        print(f'Found the paper,so the Profile exist')
-                        found = True
-                        break
+        for paper in papers:
+            if similarity(publication['title'], paper) > 0.9:
+                print(f'Found the paper,so the Profile exist')
+                found = True
+                break
         if found is False:
             '''
             Insert after the PDF
@@ -75,30 +92,3 @@ def fetch_data():
         In this point we have all the information  for the Candidate
         
         '''
-
-
-    else:
-        print("Client stance is invalid")
-
-
-    '''
-    try :
-        # Retrieve the author's data, fill-in, and print
-        search_query = scholarly.search_author(name)
-        author = scholarly.fill(next(search_query))
-        scholarly.pprint(scholarly.fill(author, sections=['Publications']))
-    except Exception as error:
-        return None
-        
-    # Insert In Database
-    mongo_handler = utils.MongoDBHandler("localhost", 27017)
-    client = mongo_handler.connect()
-
-    if client:
-        db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
-        document = mongo_handler.insert_one_document(col)
-        print("Insert Done")
-    else:
-        print("Client stance is invalid")
-    '''
-

@@ -30,16 +30,24 @@ class MongoDBHandler:
             print(f"Get MongoDB database and collection ERROR: {error}")
             return None, None
 
-    def find_document(self, collection, name):
+    def find_document(self, collection, candidate):
         try:
-            return collection.find({"author": name})
+            return collection.find(
+                {
+                    "$or": [
+                        {"author": candidate["author"]},
+                        {"email": candidate["email"]},
+                        {"phone": candidate["phone"]}
+                    ]
+                }
+            )
         except errors.ServerSelectionTimeoutError as err:
             print(f"Find_one() ERROR: {err}")
             return None
 
-    def find_document_one(self, collection, name):
+    def find_document_one(self, collection,var, name):
         try:
-            return collection.find_one({"author": name})
+            return collection.find_one({var: name})
         except errors.ServerSelectionTimeoutError as err:
             print(f"Find_one() ERROR: {err}")
             return None

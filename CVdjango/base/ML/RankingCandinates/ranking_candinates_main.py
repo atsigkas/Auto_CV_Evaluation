@@ -5,25 +5,28 @@ def compute_similarity(embedding1, embedding2):
 def normalization(value,min,max):
     return (value-min)/(max-min)
 
+
 def mean_publications(author,posittion_embedding):
 
-    sorted_data = sorted(author["publication"], key=lambda x: x['embedding'],reverse=True)
     # take the top N
-    N = 2
+    N = 10
     if len(author["publication"])<N: N=len(author["publication"])
     estimation = 0
-    top = sorted_data[:N]
-    for pub in top:
-        print(compute_similarity(pub['embedding'],posittion_embedding))
-        estimation = estimation + compute_similarity( pub['embedding'],posittion_embedding )
-        print(estimation)
+    sorted_data=[]
+    for pub in author["publication"]:
+        print(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
+        sorted_data.append(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
+
+    top_N_values = sorted(sorted_data, reverse=True)[:N]
     # calculate the mean
-    mean = estimation/N
+    mean = sum(top_N_values)/N
     candidate_score={
         "id": author["_id"],
         "score":mean
     }
     return candidate_score
+
+
 def rank_candidates(candidates_scores, threshold):
     print(candidates_scores)
     ranked_candidates = sorted(candidates_scores, key=lambda x: x["score"], reverse=True)
