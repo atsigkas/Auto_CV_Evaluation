@@ -1,0 +1,19 @@
+To use the Stanford Named Entity Recognizer (NER) with Python, you will need to download the Stanford NER Java implementation and the corresponding models. Follow these steps to set up the required files:
+
+    Download the Stanford NER Java implementation:
+        Go to the Stanford NLP website: https://nlp.stanford.edu/software/CRF-NER.html#Download
+        Download the "Stanford Named Entity Recognizer version 4.2.0" zip file.
+
+    Extract the downloaded zip file to get the stanford-ner-4.2.0 folder.
+
+    Download the models for English (3 class model):
+        Inside the stanford-ner-4.2.0 folder, there is a subfolder named classifiers.
+        Download the "english.all.3class.distsim.crf.ser.gz" model from this link:
+        https://nlp.stanford.edu/software/stanford-ner-2020-11-17.zip
+        Extract the downloaded zip file and move the model file (english.all.3class.distsim.crf.ser.gz) to the classifiers folder.
+
+Now, you have the required files for running Stanford NER with Python.
+
+Next, you can use the nltk library to interface with the Stanford NER Java implementation and perform named entity recognition in Python.
+
+Here's a Python code example using the Stanford NER with NLTK:
