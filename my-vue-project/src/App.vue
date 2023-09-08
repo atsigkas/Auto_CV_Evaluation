@@ -74,6 +74,7 @@ export default {
       pdfFiles: [],
       showSidebar: false,
       greenIcon: false, // Add this property
+      animateRemoved: false,
     };
   },
   methods: {
@@ -416,20 +417,7 @@ textarea {
 }
 
 /* Adjust the glowing effect for the button and container when hovering */
-.submit-button::after {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: rgba(234, 182, 118, 0.1);
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.5s ease-out;
-  pointer-events: none;
-  animation: glowing-border 2s linear infinite;
-}
+
 
 /* Adjust the glowing effect for the submit button when hovering */
 .submit-button:hover::after {
@@ -531,5 +519,20 @@ textarea {
 .pdf-icon.green-icon {
   content: url('~@/assets/pdf-image.svg'); /* Replace with the actual path to your white PDF icon */
   transition: none; /* Remove the transition */
+}
+
+.animate-removed {
+  animation: colorChange 2s; /* Set animation duration to 2 seconds */
+  transition: filter 3s ease-in-out; /* Add a transition for smooth color change */
+}
+
+@keyframes colorChange {
+  0%{
+    filter: hue-rotate(-200deg) invert(100%) sepia(2000%) saturate(1000%) drop-shadow(1px 1px 0 red);/* Original color */
+  }
+  100% {
+    filter: hue-rotate(1000deg); /* Rotate color halfway */
+  }
+  
 }
 </style>
