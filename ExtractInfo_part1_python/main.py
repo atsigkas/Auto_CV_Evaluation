@@ -56,16 +56,34 @@ def process_pdfs(directory):
 
             # Extract publications using regex
             publications = extract_publications(preprocessed_text,full_NAME_Final)
+            print(publications)
+            # Create a list to store publication dictionaries
+            publication_list = []
+ 
+            # Iterate over the extracted publications and create dictionaries
+            for publication in publications:
+                publication_dict = {
+                    "title": publication,
+                    "abstract": "",
+                    "researchgate_url": "",
+                    "googlescholar_url": "",
+                    "sematic_url": "",
+                    "embedding": ""
+                }
+                publication_list.append(publication_dict)
 
             # Create a dictionary to store all the extracted data for each PDF
             pdf_data = {
-                "filename": filename,
+                #"filename": filename,
                 #"text": text,  # Add the text
-                "preprocessed_text": preprocessed_text,  # Add the text
-                "fullName": full_NAME_Final,
+                #"preprocessed_text": preprocessed_text,  # Add the text
+                "author": full_NAME_Final,
                 "email": relevant_email,
-                "phoneNumber": first_phone_number,
-                "publications' titles": publications
+                "phone": first_phone_number,
+                "researchgate_url": '',
+                "googlescholar_url": '',
+                "sematic_url": '',
+                "publications": publication_list
             }
 
             all_data.append(pdf_data)
@@ -73,7 +91,7 @@ def process_pdfs(directory):
     return all_data
 
 if __name__ == "__main__":
-    directory = "C:/Users/atsigkas/AUTO_CV/MOCK CV Data"
+    directory = "C:/Users/atsigkas/AUTO_CV/Auto_CV_Evaluation/MOCK CV Data"
     # Process PDFs in the directory
     all_data = process_pdfs(directory)
 
@@ -88,12 +106,12 @@ if __name__ == "__main__":
         print("Emails extracted using regular expression:")
         print(data["email"])
         print("Phone numbers extracted using regular expression:")
-        print(data["phoneNumber"])
+        print(data["phone"])
         print("Publications extracted using regex:")
-        print(data["publications' titles"])  # Print extracted publications
+        print(data["publications"])  # Print extracted publications
         print("First person extracted using Stanford NER:")
-        if data["fullName"]:
-            print(data["fullName"])
+        if data["author"]:
+            print(data["author"])
         else:
             print("No persons found.")
         print("____________")
