@@ -44,7 +44,8 @@ class ScholarAPI:
                 "abstract": '',
                 "citation": '',
                 "topics": '',
-                "type": ''
+                "type": '',
+                "embeddings": ''
             }
             self.scholar_publications.append(pub)
 
@@ -56,7 +57,8 @@ class ScholarAPI:
                         "source": "AUTHOR_PUBLICATION_ENTRY",
                         "author_pub_id": scholar_publication['url'],
                         "bib": {
-                            "title": scholar_publication['title']
+                            "title": scholar_publication['title'],
+                            "abstract": scholar_publication['abstract']
                         }
                     }
                     scholarly.fill(scholar_temp)
@@ -85,6 +87,7 @@ class ScholarAPI:
             print("Google Scholar URL:", pub['googlescholar_url'])
             print("Semantic URL:", pub['sematic_url'])
             print("-----")
+        self.candidate['googlescholar'] = self.scholar_publications
 
     def update_publication(self, col):
         try:
@@ -102,8 +105,11 @@ class ScholarAPI:
             print(error)
             print("Couldn't Update")
 
-    def update_researchgate_publication(self, col):
+    def update_googlescholar_publication(self, col):
         col.update_one(
             {'_id': self.candidate['_id']},
             {'$push': {"googlescholar": {"$each": self.scholar_publications}}}
         )
+
+    def insert_researchgate_candidate(self, col):
+        col.insert_one(self.candidate)

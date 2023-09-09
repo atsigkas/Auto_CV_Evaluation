@@ -1,6 +1,4 @@
-from scholarly import scholarly
-import json
-from CVdjango.base.scrapers.scholar_api import *
+from CVdjango.base.scrapers.Scholar.scholar_api import *
 
 
 # search by unique author id

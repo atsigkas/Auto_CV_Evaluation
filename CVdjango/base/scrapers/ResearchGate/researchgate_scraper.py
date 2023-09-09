@@ -11,11 +11,13 @@ class ResearchGateScraper:
     def find_all_papers(self, url, i):
         try:
             print('Page:'+str(i))
+            print(f"Profile Author in ResearchGate:{url}")
             response = requests.get(get_proxy_url(url + '/' + str(i), True))
             soup = BeautifulSoup(response.text, 'html.parser')
             links = soup.find_all('a', class_='nova-legacy-e-link nova-legacy-e-link--color-inherit nova-legacy-e-link--theme-bare',href=True)
             for link in links:
                 href = link.get('href')
+                print(href)
                 if "researchgate.net/publication" in href:
                     publication = {
                         "url": href,
@@ -106,6 +108,7 @@ class ResearchGateScraper:
                         researchgate_publication[key] = extract_text(soup, selector)
 
                     self.candidate['publication'][i]['researchgate_url']=researchgate_publication['url']
+                    self.candidate['publication'][i]['abstract'] = researchgate_publication['abstract']
 
                     print(researchgate_publication)
                     break
@@ -126,18 +129,19 @@ class ResearchGateScraper:
             print("Google Scholar URL:", pub['googlescholar_url'])
             print("Semantic URL:", pub['sematic_url'])
             print("-----")
-
+        self.candidate['researchgate'] = self.researchgate_publications
     def update_publication(self, col):
         try:
             for i, pub in enumerate(self.candidate["publication"]):
                 new_url = pub['researchgate_url']
-                print(new_url)
+                abstract = pub['abstract']
                 # Update only the 'publication' list
                 col.update_one(
                     # query
                     {"_id": self.candidate['_id'], "publication.title": pub['title']},
                     # Update: researchgate_url
-                    {"$set": {"publication.$.researchgate_url": new_url}}
+                    {"$set": {"publication.$.researchgate_url": new_url}
+                    }
                 )
         except Exception as error:
             print(error)
@@ -148,3 +152,6 @@ class ResearchGateScraper:
             {'_id': self.candidate['_id']},
             {'$push': {"researchgate": {"$each": self.researchgate_publications}}}
         )
+
+    def insert_researchgate_candidate(self, col):
+        col.insert_one(self.candidate)
