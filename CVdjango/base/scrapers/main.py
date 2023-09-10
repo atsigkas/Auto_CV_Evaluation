@@ -44,51 +44,7 @@ candidate = {
             }
 
 def fetch_data():
+    '''
+    fdfsdf
 
-    # Search in Database
-    mongo_handler = utils.MongoDBHandler("localhost", 27017)
-    client = mongo_handler.connect()
-
-    if client:
-        db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
-        profiles = mongo_handler.find_document_one(col, "author",candidate["author"])
-        print(f"Find : {profiles}")
-
-        found = False
-        '''
-        check email
-        check number
-        check papers
-        try and exception
-        '''
-
-        print(profile['Author'])
-        if profile['email']==email or profile['phone']==phone:
-            found=True
-            break
-        print(profile['Author'])
-        for publication in profile['Publications']:
-            if found is True:
-                break
-        for paper in papers:
-            if similarity(publication['title'], paper) > 0.9:
-                print(f'Found the paper,so the Profile exist')
-                found = True
-                break
-        if found is False:
-            '''
-            Insert after the PDF
-            run each procedure
-            '''
-        else:
-            '''
-                Check after if it is empty
-                researchgate_url
-                googleScholar_url
-                sematic_url
-                then run each procedure
-            '''
-        '''
-        In this point we have all the information  for the Candidate
-        
-        '''
+    '''

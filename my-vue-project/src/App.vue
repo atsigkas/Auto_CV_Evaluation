@@ -36,8 +36,8 @@
         </button>
         <button class="toggle-sidebar-button" @click="toggleSidebar">Toggle Sidebar</button>
       </div>
-      <div class="submit-container"> <!-- Wrap the submit button in a container -->
-        <button class="submit-button" @click="submitForm">Submit</button>
+      <div class="submit-container"> <!-- Wrap the submit button in a container -->s
+        <button class="submit-button" :disabled="isButtonDisabled" @click="submitForm">Submit</button>
       </div>
     </div>
     <div class="file-size-info">
@@ -57,7 +57,8 @@
 
 <script>
 import ResultPopup from "./components/ResultPopup.vue";
-import SidebarContainer from "./components/SidebarContainer.vue"; 
+import SidebarContainer from "./components/SidebarContainer.vue";
+import axios from 'axios';
 
 export default {
   components: {
@@ -75,8 +76,16 @@ export default {
       showSidebar: false,
       greenIcon: false, // Add this property
       animateRemoved: false,
-    };
-  },
+      responseMessage: ''
+  }},
+  computed: {
+    isButtonDisabled() {
+      const disabled = !this.pdfFiles || this.pdfFiles.length === 0 || !this.jobTitle || !this.jobDescription;
+      console.log('Button Disabled:', disabled);  // Log the value
+      return disabled;
+    }
+  }
+  ,
   methods: {
     openFileInput() {
       this.$refs.fileInput.click();
@@ -104,33 +113,42 @@ export default {
         });
       }
     },
-    submitForm() {
-      // Do any processing you need to get the list of results
-      // For demonstration purposes, we'll just create a sample list of results here
-      this.results = [
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-        { id: 2, text: "Result 2" },
-        { id: 3, text: "Result 3" },
-        { id: 1, text: "Result 1aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
-      ];
+    uploadFiles() {
+      const formData = new FormData();
 
-      // Show the popup
-      this.showPopup = true;
+      // Add each file to the FormData object
+      for (let i = 0; i < this.pdfFiles.length; i++) {
+        formData.append('files', this.pdfFiles[i]);
+      }
+
+      // Add the two string values
+      formData.append('jobTitle', this.jobTitle);
+      formData.append('jobDescription', this.jobDescription);
+
+      axios.post('http://127.0.0.1:8000/api-endpoint/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(response => {
+        this.responseMessage = response.data.message;
+      })
+      .catch(error => {
+        console.error("There was an error uploading the files", error);
+        this.responseMessage = 'Error uploading files.';
+      });
+    }
+    ,
+    submitForm() {
+        console.log('Submit')
+        console.log(this.pdfFiles)
+        this.results = [
+        'item1', 'item2', 'item3'
+        ];
+        this.uploadFiles()
+        // Show the popup
+
+        this.showPopup = true;
     },
     closePopup() {
       // Close the popup when the user clicks the "Close" button
@@ -422,6 +440,14 @@ textarea {
 /* Adjust the glowing effect for the submit button when hovering */
 .submit-button:hover::after {
   opacity: 1;
+}
+
+.submit-button:disabled:hover::after {
+  opacity: 0;
+}
+
+.submit-button:disabled {
+  cursor: not-allowed;  /* Change the cursor to indicate the button is disabled */
 }
 
 /* Add the glowing effect for the submit button borders when hovering */
