@@ -1,5 +1,5 @@
 from ..db import utils
-from CVdjango.base.ML.Embedding.embedding import *
+from ..ML.Embedding.embedding import *
 
 def insert_position(positon):
     # Search in Database

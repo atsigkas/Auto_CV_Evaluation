@@ -9,6 +9,7 @@ from rest_framework import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import os
+from .PARTF.ExtractInfo_part1_python import main
 
 
 # Create your views here.
@@ -40,7 +41,9 @@ def upload_files(request):
             with open(f'uploads/{uploaded_file.name}', 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
-            # Or do other processing...
+
+        #TODO call the part 1 method
+        main.PART1(jobTitle,jobDescription)
 
         return JsonResponse({'message': 'Files uploaded successfully!'})
 

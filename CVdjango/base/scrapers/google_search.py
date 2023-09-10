@@ -1,6 +1,6 @@
 import  requests
 from bs4 import BeautifulSoup
-from CVdjango.base.scrapers.utils import *
+from .utils import *
 from abc import ABC, abstractmethod
 
 

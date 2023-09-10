@@ -4,7 +4,7 @@ kai meta varaw gia ka8e publication api
 '''
 from urllib.parse import urlparse, parse_qs
 from scholarly import scholarly
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
 import json
 import requests
 

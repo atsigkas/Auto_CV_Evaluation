@@ -14,8 +14,9 @@ def mean_publications(author,posittion_embedding):
     estimation = 0
     sorted_data=[]
     for pub in author["publication"]:
-        print(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
-        sorted_data.append(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
+        if pub['embedding']:
+            print(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
+            sorted_data.append(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
 
     top_N_values = sorted(sorted_data, reverse=True)[:N]
     # calculate the mean

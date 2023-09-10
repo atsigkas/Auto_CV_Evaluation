@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
 
 
 class ResearchGateScraper:
@@ -96,6 +96,7 @@ class ResearchGateScraper:
                     except AttributeError:
                         researchgate_publication['citation'] = ''  # or some other default value
                     '''
+                    print(researchgate_publication['title'])
                     selectors = {
                         'type': ".nova-legacy-e-badge.nova-legacy-e-badge--color-green.nova-legacy-e-badge--display-inline.nova-legacy-e-badge--luminosity-high.nova-legacy-e-badge--size-l.nova-legacy-e-badge--theme-solid.nova-legacy-e-badge--radius-m.research-detail-header-section__badge",
                         'year': "div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child",

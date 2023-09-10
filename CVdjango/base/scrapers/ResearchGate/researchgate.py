@@ -1,6 +1,6 @@
-from CVdjango.base.scrapers.google_search import GoogleSearch
+from ..google_search import GoogleSearch
 from bs4 import BeautifulSoup
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
 import requests
 
 class Researchgate(GoogleSearch):
