@@ -2,20 +2,29 @@
     <div class="popup">
       <div class="popup-content">
         <h2>Final Candidate Rating</h2>
-        <hr /> <!-- Add a horizontal line to split the rows -->
-        <div class="scrollable-list">
-          <ul class="results-list"> <!-- Add a class to the <ul> element -->
-            <!-- Iterate through the list of results and display them in the popup -->
-            <li v-for="result in results" :key="result.id">{{ result.text }}</li>
-          </ul>
-        </div>
+        <hr />
+        <table class="results-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Author</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(result, index) in results" :key="result.author">
+              <td>{{ index + 1 }}</td>
+              <td>{{ result.author }}</td>
+              <td>{{ result.score }}</td>
+            </tr>
+          </tbody>
+        </table>
         <div class="buttons-container">
-          <button class="extract-button" @click="extractList">Extract List</button>
           <button class="close-button" @click="closePopup">Close</button>
         </div>
       </div>
     </div>
-  </template>
+</template>
   
   <script>
   export default {
@@ -42,11 +51,11 @@
   /* Style the popup container and content */
   .popup {
   /* Set the width and height to cover almost the entire screen */
-  width: 90vw;
-  height: 90vh;
+  width: 30vw;
+  height: 30vh;
   position: fixed;
   top: 5vh; /* Adjust the top and left positions to center the popup */
-  left: 5vw;
+  left: 65vw;
   background-color: rgba(0, 0, 0, 0.9);
   display: flex;
   justify-content: center;
@@ -226,5 +235,21 @@ hr {
   align-items: center;
   font-family: 'Montserrat', sans-serif;
 }
-  </style>
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.results-table th, .results-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;  /* center-align the content for all columns */
+}
+
+.results-table tr:hover {
+  background-color: #909CC2;
+}
+</style>
   

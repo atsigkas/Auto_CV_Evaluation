@@ -1,6 +1,14 @@
 <template>
   <div>
     <header>
+      <div class="hamburger-wrap">
+        <button class="hamburger" type="button" @click="toggleSidebar">
+          <span class="hamburger__line"></span>
+          <span class="hamburger__middle"></span>
+          <span class="icon-bar hamburger__line"></span>          
+        </button>
+        <span class="hamburger-title" >PDF</span>
+      </div>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
       <h1>
         <span class="blue">ev</span>
@@ -44,6 +52,13 @@
       Max File Size 5MB
     </div>
     <ResultPopup v-if="showPopup" :results="results" @close="closePopup" />
+    <div v-if="showErrorPopup" class="loading-message">
+      <p>{{ errorMessage }}</p>
+      <button @click="closeErrorPopup">Close</button>
+    </div>
+    <div v-if="loading" class="loading-message">
+        Loading, please wait...
+    </div>
   </div>
   <SidebarContainer
   ref="sidebarContainer"
@@ -63,7 +78,7 @@ import axios from 'axios';
 export default {
   components: {
     ResultPopup,
-    SidebarContainer 
+    SidebarContainer
   },
   data() {
     return {
@@ -76,7 +91,9 @@ export default {
       showSidebar: false,
       greenIcon: false, // Add this property
       animateRemoved: false,
-      responseMessage: ''
+      errorMessage: 'No Candidates',
+      showErrorPopup: false,
+      loading: false
   }},
   computed: {
     isButtonDisabled() {
@@ -87,6 +104,9 @@ export default {
   }
   ,
   methods: {
+    closeErrorPopup() {
+      this.showErrorPopup = false;
+    },
     openFileInput() {
       this.$refs.fileInput.click();
     },
@@ -112,8 +132,10 @@ export default {
           }
         });
       }
+      event.target.value = null;
     },
     uploadFiles() {
+      this.loading=true;
       const formData = new FormData();
 
       // Add each file to the FormData object
@@ -131,24 +153,27 @@ export default {
         }
       })
       .then(response => {
-        this.responseMessage = response.data.message;
+        this.loading=false;
+        if (!response.data.rank) {
+            this.showErrorPopup = true;
+        } else {
+            this.results = response.data.rank;
+            this.showPopup = true;
+        }
       })
       .catch(error => {
+        this.loading = false;
         console.error("There was an error uploading the files", error);
-        this.responseMessage = 'Error uploading files.';
+        this.errorMessage = error.response ? error.response.data.message : 'Error uploading files.';
+        this.showErrorPopup = true;
       });
     }
     ,
     submitForm() {
         console.log('Submit')
         console.log(this.pdfFiles)
-        this.results = [
-        'item1', 'item2', 'item3'
-        ];
         this.uploadFiles()
         // Show the popup
-
-        this.showPopup = true;
     },
     closePopup() {
       // Close the popup when the user clicks the "Close" button

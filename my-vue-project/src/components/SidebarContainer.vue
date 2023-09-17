@@ -3,6 +3,9 @@
     <div :class="sidebarClass">
       <div class="pdf-icon-container">
         <h3 >Uploaded Files</h3>
+        //TODO: remove after
+  <Candidates/>
+
         <div class="file-count-container">
           <div class="pdf-icon" :class="{ 'green-icon': greenIcon, 'animate-removed': animateRemoved, 'animate-remove': animateRemove }">
             <img
@@ -45,7 +48,12 @@
 </template>
 
 <script>
+import Candidates from "./Candidates.vue";
+
 export default {
+  components: {
+    Candidates
+  },
   props: {
     pdfFiles: {
       type: Array,
@@ -173,6 +181,8 @@ export default {
   padding: 20px;
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
   transition: left 0.3s ease-in-out; /* Add the transition back */
+  z-index: 10;
+  padding-top: 100px;
 }
 
 .sidebar.active {

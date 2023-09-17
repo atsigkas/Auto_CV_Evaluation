@@ -20,31 +20,27 @@ def home(request):
     return render(request, 'home.html')
 
 
-
-
-from rest_framework import serializers
-
-
-@csrf_exempt  # This is for demonstration; in production, handle CSRF properly
+@csrf_exempt
 def upload_files(request):
     if request.method == 'POST':
         files = request.FILES.getlist('files')  # 'files' is the name attribute in the form input
         jobTitle = request.POST.get('jobTitle')  # Retrieve the first string value
         jobDescription = request.POST.get('jobDescription')  # Retrieve the second string value
 
-        # Ensure the directory exists
+
         if not os.path.exists('uploads'):
             os.makedirs('uploads')
+        else:
+            for filename in os.listdir('uploads'):
+                os.remove(os.path.join('uploads', filename))
 
         for uploaded_file in files:
-            # Process the file. For example, you can save it:
             with open(f'uploads/{uploaded_file.name}', 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
 
-        #TODO call the part 1 method
-        main.PART1(jobTitle,jobDescription)
+        rank = main.PART1(jobTitle,jobDescription)
 
-        return JsonResponse({'message': 'Files uploaded successfully!'})
+        return JsonResponse({'message': 'Files uploaded successfully!','rank':rank})
 
     return JsonResponse({'message': 'Invalid request method'}, status=400)

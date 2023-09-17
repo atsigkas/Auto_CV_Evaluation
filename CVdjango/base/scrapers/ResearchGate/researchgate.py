@@ -7,6 +7,7 @@ class Researchgate(GoogleSearch):
 
     def __init__(self, candidate, website):
         super().__init__(candidate, website)
+        self.publication_index = 0
 
     def search(self, response):
         soup = BeautifulSoup(response.text, 'html.parser')
@@ -20,7 +21,7 @@ class Researchgate(GoogleSearch):
 
     def search_author(self, path):
         author_url = self.candidate['author'].replace(" ", "+")
-        paper_url = self.candidate['publication'][0]['title'].replace(" ", "+")
+        paper_url = self.candidate['publication'][self.publication_index]['title'].replace(" ", "+")
         url = "https://www.google.com/search?q="+self.website+'+'+author_url+'+'+paper_url
 
         response = requests.get(get_proxy_url(url,True))
@@ -34,8 +35,8 @@ class Researchgate(GoogleSearch):
             url = link['href']
             if path in url:
                 url_split = url.split('_', 1)[1]
-                print(url_split,similarity(url_split, self.candidate['publication'][0]['title']))
-                similarity_scores.append(similarity(url_split, self.candidate['publication'][0]['title']))
+                print(url_split,similarity(url_split, self.candidate['publication'][self.publication_index]['title']))
+                similarity_scores.append(similarity(url_split, self.candidate['publication'][self.publication_index]['title']))
                 urls.append(url)
 
         similarity_table = list(zip(urls, similarity_scores))
@@ -45,8 +46,12 @@ class Researchgate(GoogleSearch):
             if score > 0.7:
                 try:
                     self.get_and_apply(url, self.search)
-                    return self.candidate
+                    return
                 except Exception as error:
                     print("Problem Found Author")
                     print(error)
-        return None
+
+        if self.publication_index < len(self.candidate['publication']):
+            self.publication_index += 1
+            self.search_author(path)
+        return

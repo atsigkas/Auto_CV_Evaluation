@@ -20,9 +20,9 @@ def mean_publications(author,posittion_embedding):
 
     top_N_values = sorted(sorted_data, reverse=True)[:N]
     # calculate the mean
-    mean = sum(top_N_values)/N
+    mean = round(sum(top_N_values)/N, 4)
     candidate_score={
-        "id": author["_id"],
+        "author": author["author"],
         "score":mean
     }
     return candidate_score

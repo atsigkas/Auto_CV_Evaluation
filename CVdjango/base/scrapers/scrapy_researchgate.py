@@ -13,8 +13,8 @@ import printjson
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-RESEARCHGATE = False
-GOOGLE = True
+RESEARCHGATE = True
+GOOGLE = False
 THREADING = False
 
 def process_candidate(candidate,mongo_handler,client,position,candidates_scores):
@@ -108,34 +108,35 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                 print(f"The Author wasn't found : '{candidate['author']}'.")
 
         else:
-            print("Insert the author")
-            can=Candidate()
-            if RESEARCHGATE:
-                researchgate = Researchgate(candidate, "site:researchgate.net")
-                researchgate.search_author("researchgate.net/publication")
+            if candidate['author'] is not None:
+                print("Insert the author")
+                can=Candidate()
+                if RESEARCHGATE:
+                    researchgate = Researchgate(candidate, "site:researchgate.net")
+                    researchgate.search_author("researchgate.net/publication")
 
-                researchgate = ResearchGateScraper(researchgate.candidate)
-                url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
-                researchgate.find_all_papers(url, 1)
-                researchgate.check_papers()
+                    researchgate = ResearchGateScraper(researchgate.candidate)
+                    url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
+                    researchgate.find_all_papers(url, 1)
+                    researchgate.check_papers()
 
-                can.override_data(researchgate.candidate)
+                    can.override_data(researchgate.candidate)
 
-            if GOOGLE:
-                scholargoogle = Scholar(candidate, "site:scholar.google.com")
-                scholargoogle.search_author("scholar.google.com/citations")
+                if GOOGLE:
+                    scholargoogle = Scholar(candidate, "site:scholar.google.com")
+                    scholargoogle.search_author("scholar.google.com/citations")
 
-                scholar_api=ScholarAPI(candidate)
-                scholar_api.check_papers()
+                    scholar_api=ScholarAPI(candidate)
+                    scholar_api.check_papers()
 
-                can.override_data(scholar_api.candidate)
+                    can.override_data(scholar_api.candidate)
 
-            can.insert_candidate(col)
+                can.insert_candidate(col)
 
-            publications_specter_embedding(can.candidate)
-            update_embedding(can.candidate, col)
-            position_embedding = specter_embedding(position.title, position.abstract)
-            candidates_scores.append(mean_publications(can.candidate, position_embedding))
+                publications_specter_embedding(can.candidate)
+                update_embedding(can.candidate, col)
+                position_embedding = specter_embedding(position.title, position.abstract)
+                candidates_scores.append(mean_publications(can.candidate, position_embedding))
 
 
 '''
@@ -222,4 +223,5 @@ def find_ranking(position_title,position_description,candidates):
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Time taken: {elapsed_time} seconds")
+    return ranked
 
