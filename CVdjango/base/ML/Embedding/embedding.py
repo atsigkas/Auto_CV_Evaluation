@@ -17,8 +17,9 @@ def publications_specter_embedding(author):
     try:
         # author have the stuff inside
         embeddings = []
+        print("####### Embeddings ############")
         for pub in author["publication"]:
-            print("####### Embedding ############")
+
             # Loop through each source array and try to find a match
             for source_name in ['researchgate','googlescholar']:  # Add other sources as needed
                 source_item = None
@@ -35,9 +36,8 @@ def publications_specter_embedding(author):
                     if not source_item.get('embedding', []):
                         embedding = specter_embedding(pub['title'], pub['abstract'])
                         pub["embedding"] = embedding
-                        print(embedding)
                         if source_item_index is not None:
-                            print(embedding)
+                            #print(embedding)
                             author[source_name][source_item_index]['embedding'] = embedding
     except Exception as error:
         print(error)

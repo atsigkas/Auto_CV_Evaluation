@@ -13,8 +13,8 @@ import printjson
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-RESEARCHGATE = True
-GOOGLE = False
+RESEARCHGATE = False
+GOOGLE = True
 THREADING = False
 
 def process_candidate(candidate,mongo_handler,client,position,candidates_scores):
@@ -102,7 +102,6 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                     can.update_candidate(col)
 
                 position_embedding = specter_embedding(position.title, position.abstract)
-                print(position.title)
                 candidates_scores.append(mean_publications(can.candidate,position_embedding))
             else:
                 print(f"The Author wasn't found : '{candidate['author']}'.")
@@ -116,6 +115,7 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                     researchgate.search_author("researchgate.net/publication")
 
                     researchgate = ResearchGateScraper(researchgate.candidate)
+                    # TODO an den exei bre8ei researchgate.candidate['researchgate_url'
                     url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
                     researchgate.find_all_papers(url, 1)
                     researchgate.check_papers()
@@ -139,64 +139,6 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                 candidates_scores.append(mean_publications(can.candidate, position_embedding))
 
 
-'''
-title21="SVM-based fuzzy decision trees for classification of high spatial resolution remote sensing images"
-title22="Right Ventricular Volume Prediction by Feature Tokenizer Transformer-Based Regression of 2D Echocardiography Small-Scale Tabular Data"
-title11='Uncovering the Black Box of Coronary Artery Disease Diagnosis: The Significance of Explainability in Predictive Models'
-title12='Classification models for assessing coronary artery disease instances using clinical and biometric data: an explainable man-in-the-loop approach'
-candidates =[
-            {
-                "author": "Elpiniki I Papageorgiou",
-                "email": "e@gmail.gr",
-                "phone": "535454453",
-                "researchgate_url": '',
-                "googlescholar_url": '',
-                "sematic_url": '',
-                "publication": [
-                    {
-                        "title": title11,
-                        "abstract":'',
-                        "researchgate_url": '',
-                        "googlescholar_url": '',
-                        "sematic_url": '',
-                    },
-                    {
-                        "title": title12,
-                        "abstract":'',
-                        "researchgate_url": '',
-                        "googlescholar_url": '',
-                        "sematic_url": '',
-                        "embedding" : ''
-                    }
-                ]
-            },
-            {
-                "author": "Serafeim Moustakidi",
-                "email": "a@a.gr",
-                "phone": "53453",
-                "researchgate_url": '',
-                "googlescholar_url": '',
-                "sematic_url": '',
-                "publication": [
-                    {
-                        "title": title21,
-                        "abstract":'',
-                        "researchgate_url": '',
-                        "googlescholar_url": '',
-                        "sematic_url": '',
-                    },
-                    {
-                        "title": title22,
-                        "abstract":'',
-                        "researchgate_url": '',
-                        "googlescholar_url": '',
-                        "sematic_url": '',
-                        "embedding" : ''
-                    }
-                ]
-            }
-]
-'''
 def find_ranking(position_title,position_description,candidates):
     start_time = time.time()
     mongo_handler = MongoDBHandler("localhost", 27017)

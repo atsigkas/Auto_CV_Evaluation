@@ -1,11 +1,292 @@
 [
     {
-        "author": null,
-        "email": null,
-        "phone": "6974616859",
+        "author": "Theologos Athanaselis",
+        "email": "athanaselis@gmail.com",
+        "phone": "2251029775",
         "researchgate_url": "",
         "googlescholar_url": "",
         "sematic_url": "",
-        "publication": null
+        "publication": [
+            {
+                "title": "ASR for emotional speech: clarifying the issues and enhancing performance.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "N-grams: A Tool for Repairing Word Order Errors in Ill-formed Texts.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Enhancing Speech Recognition Performance in the Presence of MRI Scanner Noise.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Corpus-Based Technique for Repairing Ill-Formed Sentences with Word Order Errors Using Co-Occurrences of N-Grams.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Decimative Spectral Estimation With Unconstrained Model Order.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Making Assistive Reading Tools User-Friendly: A New Platform for Greek Dyslexic Students Empowered by Automatic Speech Recognition.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Emotion in Speech: Towards an Integration of Linguistic, Paralinguistic and Psychological Analysis.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Signal Enhancement for Continuous Speech Recognition.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Fast Algorithm for Words Reordering Based on Language Model.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Sentence-level Evaluation Using Co-occurrences of N-grams.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Performance Evaluation of a Novel Technique for Word Order Errors Correction Applied to Non-Native English Speakers Corpus.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Impact of Speech Enhancement on ASR Confidence Score.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Detecting Moving Emotion.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Analysis and Modelling of the Carrier Declination for the Greek Language.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Impact of Speech Enhancement on ASR Time Stamping.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Improving Speech Recognition Performance in Noisy Environments.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Words Reordering Based on Statistical Language Model.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Comparative Study of ASR Performance in Different Emotional States.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "An Automatic Method for Revising Ill-formed Sentences Based on N-grams.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Automatic Recognition of Emotionally Colored Speech.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A New Approach for Words Reordering Based On Statistical Language Model.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Recognizing Verbal Content of Emotionally Colored Speech.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Impact of the Cocktail Party Effect on the Confidence Accuracy of Emotional Speech Recognizer.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Statistical Method for Correcting Word Order Errors in Greek Texts.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Evaluating ASR Confidence Score Performance in Different Noisy Conditions.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "User Evaluation of a Novel Technique for Word-Order Error Correction.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Novel Technique for Words Reordering Based on N-Grams.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Robust Speech Recognition in the Presence of Noise Using Medical Data.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Reducing the Cocktail Party Effect Prior to Automatic Speech Recognition.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Impact of MRI Scanner Noise on Speech Recognition Confidence Score.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A Vocal User Interface Plug-in for jMRUI.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Incorporating Speech Recognition Engine into an Intelligent Assistive System for Dyslexic Students Reading.",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Algorithms for the application of N-grams in emotional speech recognition and text correction",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "A new paradigm for finding shapes using the scale-space theory",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            },
+            {
+                "title": "Weak magnetic fields and their effects on the rehabilitation of cerebralhuman dysfunctions",
+                "abstract": "",
+                "researchgate_url": "",
+                "googlescholar_url": "",
+                "sematic_url": "",
+                "embedding": ""
+            }
+        ]
     }
 ]

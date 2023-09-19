@@ -33,9 +33,9 @@ class Scholar(GoogleSearch):
 
 
     def search(self, response,url):
-        soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response, 'html.parser')
         author = extract_text(soup,'div#gsc_prf_in')
-        print(self.candidate['author'].lower(), author, similarity(self.candidate['author'].lower(), author))
+        print(self.candidate['author'].lower(), author.lower(), similarity(self.candidate['author'].lower(), author.lower()))
         if similarity(self.candidate['author'].lower(), author.lower()) > 0.7:
             author_id=extract_scholar_id(url)
             try:
@@ -62,9 +62,8 @@ class Scholar(GoogleSearch):
         paper_url = self.candidate['publication'][self.publication_index]['title'].replace(" ", "+")
         url = "https://www.google.com/search?q="+self.website+'+'+author_url
 
-        response = requests.get(get_proxy_url(url,True))
-        webpage_html_content = response.text
-        soup = BeautifulSoup(webpage_html_content, "html.parser")
+        response = get_proxy_url(url,True)
+        soup = BeautifulSoup(response, "html.parser")
         links = soup.find_all('a', href=True)
         urls = []
 
@@ -75,12 +74,12 @@ class Scholar(GoogleSearch):
         print(urls)
         for url in urls:
             try:
-                self.get_and_apply(url, self.search)
+                response=get_proxy_url(url,True)
+                self.search(response,url)
                 if self.candidate['googlescholar_url']:
                     return self.candidate
             except Exception as error:
                 print("Problem Found Author")
-                print(error)
         if self.publication_index < len(self.candidate['publication']):
             self.publication_index += 1
             self.search_author(path)

@@ -13,11 +13,6 @@ class GoogleSearch(ABC):
     def search(self, response):
         pass  # no implementation here
 
-    def get_and_apply(self, url, callback):
-        response = requests.get(get_proxy_url(url, True))
-        if response.status_code == 200:
-            return callback(response)
-
     @abstractmethod
     def search_author(self, path):
         pass
