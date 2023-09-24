@@ -78,19 +78,49 @@ class ResearchGateScraper:
                         'year': "div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child",
                         'abstract': "div.nova-legacy-e-text.nova-legacy-e-text--size-m.nova-legacy-e-text--family-sans-serif.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-800.research-detail-middle-section__abstract",
                         'title': "h1.nova-legacy-e-text.nova-legacy-e-text--size-xl.nova-legacy-e-text--family-display.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-900.research-detail-header-section__title",
-                        'citation': "button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type"
+                        'citation': "button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type",
+                        'name_of_type':"div:first-of-type > ul:first-of-type > li:nth-child(2)>a"
                     }
+
+                    candidate_li_elements = soup.find_all(
+                        'li',
+                        {'class': 'nova-legacy-e-list__item'}
+                    )
+
+                    # Check the text of each element to find the ones containing 'Conference:'
+                    conference_li = next(
+                        (el for el in candidate_li_elements if 'conference:' in el.get_text(strip=True).lower()), None)
+
+                    # If the element is found, extract its text
+                    print('###')
+                    print(conference_li)
+
+                    if conference_li:
+                        conference_text = conference_li.get_text(strip=True)
+                        #conference_text = conference_text.replace('Conference: ', '')
+                    else:
+                        conference_text = "NO"
 
                     for key, selector in selectors.items():
                         researchgate_publication[key] = extract_text(soup, selector)
 
                     self.candidate['publication'][i]['researchgate_url'] = researchgate_publication['url']
                     self.candidate['publication'][i]['abstract'] = researchgate_publication['abstract']
+                    self.candidate['publication'][i]['type'] = researchgate_publication['type']
+                    if conference_text=="NO":
+                        self.candidate['publication'][i]['name_of_type'] = researchgate_publication['name_of_type']
+                    else:
+                        self.candidate['publication'][i]['name_of_type'] = conference_text
+                        researchgate_publication['name_of_type']=conference_text
+                    # January 2006
+                    if researchgate_publication['year'] != "Unknown":
+                        researchgate_publication['year'] = researchgate_publication['year'].split()[1]
+                        self.candidate['publication'][i]['year'] = researchgate_publication['year']
 
-
-                    print(researchgate_publication)
+                    print(json.dumps(researchgate_publication, indent=4))
                     break
         self.candidate['researchgate'] = self.researchgate_publications
+
     def update_publication(self, col):
         try:
             for i, pub in enumerate(self.candidate["publication"]):

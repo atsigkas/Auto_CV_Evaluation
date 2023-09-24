@@ -71,7 +71,7 @@ class Scholar(GoogleSearch):
             url = link['href']
             if path in url:
                 urls.append(url)
-        print(urls)
+
         for url in urls:
             try:
                 response=get_proxy_url(url,True)

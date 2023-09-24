@@ -13,8 +13,8 @@ import printjson
 def similarity(a, b):
     return SequenceMatcher(None, a, b).ratio()
 
-RESEARCHGATE = False
-GOOGLE = True
+RESEARCHGATE = True
+GOOGLE = False
 THREADING = False
 
 def process_candidate(candidate,mongo_handler,client,position,candidates_scores):
@@ -89,9 +89,8 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                             if not source_item.get('embedding', []):
                                 embedding = specter_embedding(new['title'], new['abstract'])
                                 new["embedding"] = embedding
-                                print(embedding)
                                 if source_item_index is not None:
-                                    print(embedding)
+                                    #print(embedding)
                                     can.candidate[source_name][source_item_index]['embedding'] = embedding
                             else:
                                 new["embedding"] = source_item["embedding"]
@@ -160,7 +159,7 @@ def find_ranking(position_title,position_description,candidates):
         for candidate in candidates:
             process_candidate(candidate,mongo_handler,client,position,candidates_scores)
 
-    ranked = rank_candidates(candidates_scores, 0)
+    ranked = rank_candidates(candidates_scores)
 
     end_time = time.time()
     elapsed_time = end_time - start_time

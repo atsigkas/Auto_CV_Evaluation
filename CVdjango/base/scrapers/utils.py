@@ -1,7 +1,7 @@
 from urllib.parse import urlencode
 from difflib import SequenceMatcher
 import requests
-
+import nltk
 
 
 '''
@@ -51,6 +51,7 @@ def extract_text(soup, selector):
     if element is not None:
         result = element.text
     else:
-        return ''
+        return 'Unknown'
 
     return result
+

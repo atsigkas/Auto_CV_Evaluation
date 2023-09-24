@@ -48,8 +48,10 @@ class ScholarAPI:
             self.scholar_publications.append(pub)
 
         for i, publication in enumerate(self.candidate['publication']):
+            found=False
             for scholar_publication in self.scholar_publications:
                 if similarity(publication['title'], scholar_publication['title']) > 0.7:
+                    found = True
                     scholar_temp = {
                         "container_type": "Publication",
                         "source": "AUTHOR_PUBLICATION_ENTRY",
@@ -66,18 +68,25 @@ class ScholarAPI:
                     scholar_publication["abstract"] = scholar_temp["bib"]["abstract"] if "abstract" in scholar_temp["bib"] else "Unknown"
                     scholar_publication["citation"] = scholar_temp["num_citations"] if "num_citations" in scholar_temp else "Unknow"
                     if "conference" in scholar_temp["bib"]:
-                        scholar_publication["type"] = scholar_temp["bib"]["conference"]
+                        scholar_publication["name_of_type"] = scholar_temp["bib"]["conference"]
+                        scholar_publication["type"] = "conference"
                     elif "journal" in scholar_temp["bib"]:
-                        scholar_publication["type"] = scholar_temp["bib"]["journal"]
+                        scholar_publication["name_of_type"] = scholar_temp["bib"]["journal"]
+                        scholar_publication["type"] = "journal"
                     else:
                         scholar_publication["type"] = "Unknown"
+                        scholar_publication["name_of_type"] = "Unknown"
 
-                    print(json.dumps(scholar_temp, indent=4))
+                    #print(json.dumps(scholar_temp, indent=4))
                     self.candidate['publication'][i]['googlescholar_url'] = scholar_publication['url']
                     self.candidate['publication'][i]['abstract'] = scholar_publication['abstract']
                     self.candidate['publication'][i]['type'] = scholar_publication['type']
+                    self.candidate['publication'][i]['name_of_type'] = scholar_publication['name_of_type']
 
                     break
+
+            if not found:
+                self.scholar_publications.remove(scholar_publication)
         self.candidate['googlescholar'] = self.scholar_publications
 
     def update_publication(self, col):

@@ -44,8 +44,8 @@ def publications_specter_embedding(author):
 
 def update_embedding(authors_or_author, col):
         try:
-            print(authors_or_author.get('publication'))
-            print(authors_or_author['publication'])
+            #print(authors_or_author.get('publication'))
+            #print(authors_or_author['publication'])
             # Update the document if the field has changed
             result = col.update_one(
                 {"_id": authors_or_author['_id']},

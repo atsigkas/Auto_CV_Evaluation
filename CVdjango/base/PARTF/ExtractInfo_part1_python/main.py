@@ -76,7 +76,7 @@ def process_pdfs(directory):
                         "abstract": "",
                         "researchgate_url": "",
                         "googlescholar_url": "",
-                        "sematic_url": "",
+                        "year": "",
                         "embedding": ""
                     }
                     publication_list.append(publication_dict)
@@ -90,7 +90,7 @@ def process_pdfs(directory):
                 "phone": first_phone_number,
                 "researchgate_url": '',
                 "googlescholar_url": '',
-                "sematic_url": '',
+                "year": '',
                 "publication": publication_list
             }
 

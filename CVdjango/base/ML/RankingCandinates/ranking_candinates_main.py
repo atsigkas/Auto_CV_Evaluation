@@ -1,4 +1,9 @@
 from sklearn.metrics.pairwise import cosine_similarity
+from ...scrapers.SJR.SJR import search_type
+
+THRESHOLD=0
+PUB_PERCENTAGE = 0.85
+TYPE_PERCENTAGE = 0.15
 
 def compute_similarity(embedding1, embedding2):
     return cosine_similarity(embedding1, embedding2)
@@ -6,29 +11,38 @@ def normalization(value,min,max):
     return (value-min)/(max-min)
 
 
-def mean_publications(author,posittion_embedding):
+def mean_publications(author,position_embedding):
 
-    # take the top N
-    N = 10
-    if len(author["publication"])<N: N=len(author["publication"])
-    estimation = 0
-    sorted_data=[]
+
+    length_of_publication = 0
+    sorted_data = []
+    rank = 0
+
     for pub in author["publication"]:
+        rank = 0
         if pub['embedding']:
-            print(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
-            sorted_data.append(compute_similarity( pub['embedding'],posittion_embedding )[0][0])
+            text_similarity = compute_similarity(pub['embedding'], position_embedding)[0][0]
 
-    top_N_values = sorted(sorted_data, reverse=True)[:N]
+            if pub["name_of_type"] != "Unknown":
+                if pub["year"]:
+                    rank=search_type(pub["name_of_type"], pub["year"])
+            if rank > 0:
+                text_similarity = text_similarity * PUB_PERCENTAGE
+                rank_type = normalization(rank, 0, 100) * TYPE_PERCENTAGE
+                sorted_data.append(text_similarity+rank_type)
+            else:
+                sorted_data.append(text_similarity)
+
     # calculate the mean
-    mean = round(sum(top_N_values)/N, 4)
-    candidate_score={
+    mean = round(sum(sorted_data)/length_of_publication, 4)
+    candidate_score = {
         "author": author["author"],
-        "score":mean
+        "score": mean
     }
     return candidate_score
 
 
-def rank_candidates(candidates_scores, threshold):
+def rank_candidates(candidates_scores):
     print(candidates_scores)
     ranked_candidates = sorted(candidates_scores, key=lambda x: x["score"], reverse=True)
-    return [c for c in ranked_candidates if c["score"] > threshold]
+    return [c for c in ranked_candidates if c["score"] > THRESHOLD]
