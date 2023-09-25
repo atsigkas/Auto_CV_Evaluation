@@ -1,7 +1,6 @@
 from urllib.parse import urlencode
 from difflib import SequenceMatcher
 import requests
-import nltk
 
 
 '''

@@ -1,4 +1,5 @@
 from pymongo import MongoClient, errors, TEXT
+import json
 
 
 class MongoDBHandler:

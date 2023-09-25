@@ -39,8 +39,8 @@ def upload_files(request):
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
 
-        rank = main.PART1(jobTitle,jobDescription)
+        candidates = main.PART1(jobTitle,jobDescription)
 
-        return JsonResponse({'message': 'Files uploaded successfully!','rank':rank})
+        return JsonResponse({'message': 'Files uploaded successfully!','candidates': candidates})
 
     return JsonResponse({'message': 'Invalid request method'}, status=400)

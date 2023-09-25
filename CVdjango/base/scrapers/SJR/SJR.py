@@ -3,7 +3,7 @@ from ..utils import *
 
 
 def search_type(name,date):
-
+    print("### SJR ###")
     name_with_plus = name.replace(" ", "+")
     url = "https://www.google.com/search?q="+"site:scimagojr.com"+"+"+name_with_plus
     response = get_proxy_url(url, True)
@@ -50,7 +50,16 @@ def find_value_by_date(url,name,date):
                             print(f"The name  of the type from the publication: {name}")
                             print(f"The name  of the type from the website: {title}")
                             print(f"Similarity score : {similarity_score}")
-                            return float(cols[1].get_text())  # Assuming the value is in the next
+                            sjr_value = float(cols[1].get_text())
+                            if sjr_value > 0.47:
+                                value = 1
+                            elif sjr_value > 0.26:
+                                value = 0.75
+                            elif sjr_value > 0.14:
+                                value = 0.5
+                            else:
+                                value =0.25
+                            return value # Assuming the value is in the next
         return 0
     return 0
 

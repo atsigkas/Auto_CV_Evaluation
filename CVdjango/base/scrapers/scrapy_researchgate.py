@@ -1,3 +1,4 @@
+from .CORE.CORE import core_crawling
 from ..db.utils import *
 from .ResearchGate.researchgate import *
 from .ResearchGate.researchgate_scraper import *
@@ -47,18 +48,15 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                 print(f"The query  some Documents for the Candidate '{profile['author']}'.")
                 can = Candidate(profile)
 
-                # Convert arrays to sets of serialized objects
                 old_set = set(obj["title"] for obj in can.candidate["publication"])
                 new_set = set(obj["title"] for obj in candidate["publication"])
 
-                # Find objects that are in old array but not in new array
                 removed_publications = old_set - new_set
 
-                # Find objects that are in new array but not in old array
                 added_publications = new_set - old_set
 
-                print(f"Number of Publication from old Resume : "+str(len(removed_publications)))
-                print(f"Number of Publication from New Resume which wasn't in the Array : "+str(len(added_publications)))
+                print(f"Number of Publications from Old Resume which weren't in the new one : "+str(len(removed_publications)))
+                print(f"Number of Publications from New Resume which weren't in the old one : "+str(len(added_publications)))
 
                 #Remove the old Publications
                 filtered_old_array = [obj for obj in can.candidate["publication"] if obj["title"] not in removed_publications]
@@ -73,7 +71,9 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                     "sematic_url": ''
                 } for obj in added_publications]
 
-                # New Publications
+                # New Publication
+                source_item = None
+                source_item_index = None
                 for new in added_objects_array:
                     print(f"Checking item: {new}")
                     for source_name in ['researchgate',"googlescholar"]:
@@ -101,7 +101,7 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                     can.update_candidate(col)
 
                 position_embedding = specter_embedding(position.title, position.abstract)
-                candidates_scores.append(mean_publications(can.candidate,position_embedding))
+                #candidates_scores.append(mean_publications(can.candidate,position_embedding))
             else:
                 print(f"The Author wasn't found : '{candidate['author']}'.")
 
@@ -114,7 +114,6 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
                     researchgate.search_author("researchgate.net/publication")
 
                     researchgate = ResearchGateScraper(researchgate.candidate)
-                    # TODO an den exei bre8ei researchgate.candidate['researchgate_url'
                     url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
                     researchgate.find_all_papers(url, 1)
                     researchgate.check_papers()
@@ -134,12 +133,13 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
 
                 publications_specter_embedding(can.candidate)
                 update_embedding(can.candidate, col)
-                position_embedding = specter_embedding(position.title, position.abstract)
-                candidates_scores.append(mean_publications(can.candidate, position_embedding))
+                #position_embedding = specter_embedding(position.title, position.abstract)
+                #candidates_scores.append(mean_publications(can.candidate, position_embedding))
 
 
 def find_ranking(position_title,position_description,candidates):
     start_time = time.time()
+    core_crawling()
     mongo_handler = MongoDBHandler("localhost", 27017)
     client = mongo_handler.connect()
     candidates_scores = []
@@ -159,10 +159,10 @@ def find_ranking(position_title,position_description,candidates):
         for candidate in candidates:
             process_candidate(candidate,mongo_handler,client,position,candidates_scores)
 
-    ranked = rank_candidates(candidates_scores)
+    #ranked = rank_candidates(candidates_scores)
 
     end_time = time.time()
     elapsed_time = end_time - start_time
     print(f"Time taken: {elapsed_time} seconds")
-    return ranked
+    return candidates
 

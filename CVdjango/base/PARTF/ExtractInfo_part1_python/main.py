@@ -4,6 +4,7 @@ from .text_utils import extract_text_from_pdf, preprocess_text, clean_text_for_p
 from .NER_utils import initialize_stanford_ner,extract_persons_with_stanford_ner, extract_other_entities_with_stanford_ner
 from .regex_utils import extract_names_with_regular_expression, extract_emails, extract_phone_numbers, get_most_relevant_email,extract_publications
 from ...db import utils
+from ...db.utils import MongoDBHandler
 from ...scrapers import scrapy_researchgate
 
 
@@ -128,5 +129,3 @@ def PART1(position_title,position_abstract):
             print("No persons found.")
         print("____________")
     return scrapy_researchgate.find_ranking(position_title,position_abstract,all_data)
-
-

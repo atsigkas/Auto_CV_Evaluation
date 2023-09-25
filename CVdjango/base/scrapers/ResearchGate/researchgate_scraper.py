@@ -65,9 +65,6 @@ class ResearchGateScraper:
             for researchgate_publication in self.researchgate_publications:
                 if similarity(publication['title'],researchgate_publication['title'])>0.8:
                     response = get_proxy_url(researchgate_publication['url'],True)
-                    #response_json = response.json()
-
-                    #webpage_html_content = response_json["solution"]["response"]
 
                     # Create a BeautifulSoup object and specify the parser
                     soup = BeautifulSoup(response, "html.parser")
