@@ -57,3 +57,4 @@ def update_embedding(authors_or_author, col):
             )
         except Exception as e:
             print(f" update_embedding - An error occurred: {e}")
+

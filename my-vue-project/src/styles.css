@@ -1,9 +1,41 @@
+:root{
+  --gold:rgba(234, 182, 118, 0.8)
+}
+
+:root{
+  --blue:rgb(49, 247, 253)
+}
+
 * {
     font-family: 'Montserrat', sans-serif;
     color: white;
 }
 *,* :before,* :after{
   box-sizing: border-box;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+::-webkit-scrollbar-thumb {
+  background: var(--gold); 
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
+::-webkit-scrollbar-track{
+  background: rgb(46, 42, 42)
+}
+
+ul,li{
+  list-style-type: none;
 }
 /* Define a default background image for larger screens */
 body {
@@ -35,7 +67,7 @@ h1 {
 }
 
 .blue {
-  color: #0fe2f7;
+  color:var(--blue);
 }
 
 .bluegreen {

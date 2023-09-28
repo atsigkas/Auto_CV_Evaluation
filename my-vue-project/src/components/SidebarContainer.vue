@@ -37,8 +37,8 @@
               </ul>
             </div>
           </div>
-          <CandidatesTable :candidates="candidates"/>
-          <RankingCandidates :results="results"/>
+          <CandidatesTable :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription' :ranking="ranking" @updateRanking="updateRanking"/>
+          <RankingCandidates :results="results" :ranking="ranking" />
         </div>
       </div>
     </div>
@@ -59,7 +59,6 @@
 <script>
 import RankingCandidates from "./RankingCandidates.vue";
 import CandidatesTable from "./CandidatesTable.vue";
-// import Tabs from "./Tabs.vue";
 
 export default {
   components: {
@@ -79,6 +78,12 @@ export default {
       type: Array,
       required: true,
     },
+    jobTitle:{
+      type: String
+    },
+    jobDescription:{
+      type: String
+    },
     greenIcon: Boolean, 
   },
   data() {
@@ -89,6 +94,7 @@ export default {
       removeIndex: null,
       showSidebar: false,
       animateRemove: false,
+      ranking: []
     };
   },
   computed: {
@@ -115,6 +121,9 @@ export default {
     document.removeEventListener('click', this.handleOutsideClick);
   },
   methods: {
+    updateRanking(newData) {
+      this.ranking = newData;
+    },
     removeFile(index) {
       if (index !== null && index < this.localPdfFiles.length) {
         this.animateRemoved = true;

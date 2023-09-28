@@ -46,6 +46,25 @@ class MongoDBHandler:
             print(f"Find_one() ERROR: {err}")
             return None
 
+    def find_document_after_pdfs(self, collection, candidate):
+        try:
+            return collection.find(
+                {
+                    "$or": [
+                        {"author": candidate["author"]},
+                        {"email": candidate["email"]},
+                        {"phone": candidate["phone"]}
+                    ]
+                },
+                {
+                    "researchgate":0,
+                    "googlescholar":0
+                 }
+            )
+        except errors.ServerSelectionTimeoutError as err:
+            print(f"Find_one() ERROR: {err}")
+            return None
+
     def find_document_one(self, collection,var, name):
         try:
             return collection.find_one({var: name})

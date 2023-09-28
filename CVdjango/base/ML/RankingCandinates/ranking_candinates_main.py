@@ -1,4 +1,6 @@
 from sklearn.metrics.pairwise import cosine_similarity
+
+from ..Embedding.embedding import specter_embedding
 from ...scrapers.SJR.SJR import search_type
 from ...scrapers.CORE.CORE import check_csv_files
 
@@ -12,19 +14,24 @@ def normalization(value,min,max):
     return (value-min)/(max-min)
 
 
-def mean_publications(author,position_embedding):
+def mean_publications(author,position_embedding,NotFoundPublications):
 
 
     length_of_publication = 0
     sorted_data = []
     rank = 0
+    for notfoundpub in NotFoundPublications:
+        for pub in author["publication"] :
+            if notfoundpub['pub']['title'] == pub['title'] and author["_id"]==notfoundpub["id"]:
+                pub['embedding'] = specter_embedding(pub['title'],'')
+                print("TIME")
 
     for pub in author["publication"]:
         rank = 0
-        if pub['embedding']:
+        if pub.get('embedding') and pub['embedding'] != '':
             text_similarity = compute_similarity(pub['embedding'], position_embedding)[0][0]
             length_of_publication += 1
-            if pub["name_of_type"] != "Unknown":
+            if pub.get('name_of_type') and pub["name_of_type"] != "Unknown":
                 if pub["year"]:
                     rank = search_type(pub["name_of_type"], pub["year"])
                     if rank == 0:

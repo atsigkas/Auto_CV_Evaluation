@@ -10,6 +10,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import os
 from .PARTF.ExtractInfo_part1_python import main
+from .scrapers.scrapy_researchgate import update_candidate_profile
+from .scrapers.scrapy_researchgate import ranking
+from .scrapers.saveURl import *
+import json
 
 
 # Create your views here.
@@ -23,9 +27,9 @@ def home(request):
 @csrf_exempt
 def upload_files(request):
     if request.method == 'POST':
-        files = request.FILES.getlist('files')  # 'files' is the name attribute in the form input
-        jobTitle = request.POST.get('jobTitle')  # Retrieve the first string value
-        jobDescription = request.POST.get('jobDescription')  # Retrieve the second string value
+        files = request.FILES.getlist('files')
+        jobTitle = request.POST.get('jobTitle')
+        jobDescription = request.POST.get('jobDescription')
 
 
         if not os.path.exists('uploads'):
@@ -44,3 +48,30 @@ def upload_files(request):
         return JsonResponse({'message': 'Files uploaded successfully!','candidates': candidates})
 
     return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def save_url(request):
+    if request.method == 'POST':
+        url = request.POST.get('url')
+        _id = request.POST.get('_id')
+
+        candidate = update_candidate_profile(_id, url)
+
+        return JsonResponse({'message': 'Candidate Url successfully saved', 'candidate': candidate})
+
+    return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+@csrf_exempt
+def ranking_candidates(request):
+    if request.method == 'POST':
+        NotFoundPublications = json.loads(request.POST.get('NotFoundPublications'))
+        candidates = json.loads(request.POST.get('candidates'))
+        jobTitle = request.POST.get('jobTitle')
+        jobDescription = request.POST.get('jobDescription')
+        rankings = ranking(NotFoundPublications,candidates,jobTitle,jobDescription)
+        print(rankings)
+        return JsonResponse({'message': 'Ranking is calculated', 'rankings': rankings})
+
+    return JsonResponse({'message': 'Invalid request method'}, status=400)
+
+

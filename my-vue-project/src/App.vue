@@ -47,18 +47,24 @@
       Max File Size 5MB
     </div>
   </div>
-  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :results="results" :greenIcon="greenIcon"
+  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :results="results" :jobTitle='jobTitle' :jobDescription='jobDescription' :greenIcon="greenIcon"
     @update-pdf-files="updatePdfFiles" />
+  <SpinnerLoading />
+  <DialogComponent />
 </template>
 
 
 <script>
 import axios from 'axios';
 import SidebarContainer from "./components/SidebarContainer.vue";
+import SpinnerLoading from "./components/Spinnerloading.vue";
+import DialogComponent from "./components/DialogComponent.vue";
 
 export default {
   components: {
-    SidebarContainer
+    SidebarContainer,
+    SpinnerLoading,
+    DialogComponent
   },
   data() {
     return {
@@ -74,7 +80,7 @@ export default {
       animateRemoved: false,
       errorMessage: 'No Candidates',
       showErrorPopup: false,
-      loading: false
+      loading: false,
     }
   },
   computed: {
@@ -86,6 +92,15 @@ export default {
   }
   ,
   methods: {
+    showDialog(text) {
+      this.$store.dispatch('showDialog', text);
+    },
+    showSpinner(text) {
+      this.$store.dispatch('showSpinner', text);
+    },
+    hideSpinner(){
+      this.$store.dispatch('hideSpinner');
+    },
     closeErrorPopup() {
       this.showErrorPopup = false;
     },
@@ -117,7 +132,7 @@ export default {
       event.target.value = null;
     },
     uploadFiles() {
-      this.loading = true;
+      this.showSpinner("Waiting to find the Candidates.It will take some time.")
       const formData = new FormData();
 
       // Add each file to the FormData object
@@ -129,7 +144,6 @@ export default {
       formData.append('jobTitle', this.jobTitle);
       formData.append('jobDescription', this.jobDescription);
       
-      // Replace 'data.json' with the URL to your JSON file
       
       axios.post('http://127.0.0.1:8000/api-endpoint/', formData, {
         headers: {
@@ -137,32 +151,23 @@ export default {
         }
       })
         .then(response => {
-          this.loading = false;
+          this.hideSpinner()
           if (!response.data.candidates) {
-            this.showErrorPopup = true;
+            this.showDialog("Something went wrong")
           } else {
             this.candidates = response.data.candidates;
-            this.showPopup = true;
+            this.showDialog("We found the candidates")
           }
         })
         .catch(error => {
-          this.loading = false;
-          console.error("There was an error uploading the files", error);
-          this.errorMessage = error.response ? error.response.data.message : 'Error uploading files.';
-          this.showErrorPopup = true;
+          this.hideSpinner()
+          this.showDialog("We had an unexpected error:"+ error)
         });
         
     }
     ,
     submitForm() {
-      console.log('Submit')
-      console.log(this.pdfFiles)
       this.uploadFiles()
-      // Show the popup
-    },
-    closePopup() {
-      // Close the popup when the user clicks the "Close" button
-      this.showPopup = false;
     },
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;

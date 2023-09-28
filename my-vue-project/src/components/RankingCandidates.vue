@@ -11,10 +11,10 @@
           </tr>
       </thead>
       <tbody>
-        <tr v-for="(result, index) in results" :key="index">
+        <tr v-for="(ranking, index) in ranking" :key="index">
           <td>{{ index + 1 }}</td>
-          <td>{{ result.author }}</td>
-          <td>{{ result.score }}</td>
+          <td>{{ ranking.author }}</td>
+          <td>{{ ranking.score }}</td>
         </tr>
       </tbody>
     </table>
@@ -29,6 +29,10 @@ export default {
       type: Array,
       required: true,
     },
+    ranking: {
+      type: Array,
+      required: true,
+    }
   },
   methods: {
   }

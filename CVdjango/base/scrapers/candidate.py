@@ -19,4 +19,17 @@ class Candidate:
                 "googlescholar": self.candidate.get('googlescholar', [])
         }}
         )
+    def update_candidate_after_url(self, col):
+        col.update_one(
+            {"_id": self.candidate['_id']},
+            {"$set": {
+                "researchgate_url":self.candidate["researchgate_url"],
+                "googlescholar_url":self.candidate["googlescholar_url"],
+                "publication": self.candidate['publication'],
+                "researchgate": self.candidate.get('researchgate', []),
+                "googlescholar": self.candidate.get('googlescholar', [])
+        }}
+        )
 
+    def to_dict(self):
+        return self.__dict__
