@@ -43,11 +43,13 @@ def process_pdfs(directory):
             if not PersonFullname_with_regEx:
                 try:
                     persons_from_NER = extract_persons_with_stanford_ner(text,st)
+                    print(persons_from_NER)
                 except Exception as error:
                     persons_from_NER=None
-                
+
                 # Extract the first person
-                first_person_from_NER = persons_from_NER[0]['text'] if persons_from_NER else None
+                first_person_from_NER = persons_from_NER[0]['text']
+                #if persons_from_NER else None
                 
                 full_NAME_Final =first_person_from_NER
             else:
@@ -87,8 +89,8 @@ def process_pdfs(directory):
             # Create a dictionary to store all the extracted data for each PDF
             pdf_data = {
                 "author": full_NAME_Final,
-                "email": relevant_email,
-                "phone": first_phone_number,
+                "email": relevant_email if relevant_email else "Unknown",
+                "phone": first_phone_number if first_phone_number else "Unknown",
                 "researchgate_url": '',
                 "googlescholar_url": '',
                 "year": '',
@@ -105,15 +107,10 @@ def PART1(position_title,position_abstract):
 
     all_data = process_pdfs(directory)
 
-
-    # Save the data to a JSON file
-    with open("extracted_data.json", "w") as json_file:
-        json.dump(all_data, json_file, indent=4)
-
     # Print all the extracted information for each PDF
     for data in all_data:
         print("____________")
-        #print(f"File: {data['filename']}")
+        print(f"Name: {data['author']}")
         print("Emails extracted using regular expression:")
         print(data["email"])
         print("Phone numbers extracted using regular expression:")

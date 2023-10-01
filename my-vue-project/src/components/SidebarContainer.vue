@@ -16,35 +16,53 @@
         <div class="tab-content-wrapper">
           <div class="tab-content active" id="pdf-tab-content">
             <div class="pdf-icon-container">
-              <div class="file-count-container">
-                <div class="pdf-icon"
-                  :class="{ 'green-icon': greenIcon, 'animate-removed': animateRemoved, 'animate-remove': animateRemove }">
-                  <img src="@/assets/pdf-image.svg" alt="PDF Icon" class="pdf-icon"
-                    :class="{ 'green-icon': greenIcon, pdfIcon: true, 'animate-removed': animateRemoved, 'animate-remove': animateRemove }" />
+              <div class="pdf-count-container">
+                <div class="pdf-icon">
+                  <img src="@/assets/pdf-image.svg" alt="PDF Icon" class="pdf-icon" />
                 </div>
-                <span class="file-count">{{ localPdfFiles.length }}</span>
+                <span class="pdf-count">{{ localPdfFiles.length }}</span>
               </div>
             </div>
-            <div class="files-container">
-              <ul class="uploaded-files-list">
-                <li v-for="(file, index) in localPdfFiles" :key="index" class="file-list-item">
+            <div class="pdf-container">
+              <ul class="uploaded-pdf-list">
+                <li v-for="(file, index) in localPdfFiles" :key="index" class="pdf-list-item">
                   <button @click="showWarning(index)" class="remove-button"
                     :class="{ glowing: showConfirmation && removeIndex === index }">
-                    <img src="@/assets/remove-svgrepo-com.svg" alt="Remove" class="remove-icon" />
+                    <div class="remove-icon">
+                      <svg fill="#000000" height="30px" width="30px" version="1.1" id="Layer_1"
+                        viewBox="-51.2 -51.2 614.40 614.40" stroke="#000000" stroke-width="0.00512">
+                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+                        <g id="SVGRepo_iconCarrier">
+                          <g>
+                            <g>
+                              <path
+                                d="M60.236,210.824L90.354,512h331.294l30.118-301.176H60.236z M188.236,459.294H143.06V263.529h45.176V459.294z M278.589,459.294h-45.177V263.529h45.177V459.294z M368.942,459.294h-45.176V263.529h45.176V459.294z" />
+                            </g>
+                          </g>
+                          <g>
+                            <g>
+                              <path
+                                d="M391.53,90.353h-52.706v-7.529C338.824,37.155,301.67,0,256.001,0s-82.824,37.155-82.824,82.824v7.529h-52.706 c-44.767,0-81.908,32.565-89.08,75.294h449.218C473.438,122.918,436.297,90.353,391.53,90.353z M293.648,90.353h-75.294v-7.529 c0-20.759,16.888-37.647,37.647-37.647s37.647,16.888,37.647,37.647V90.353z" />
+                            </g>
+                          </g>
+                        </g>
+                      </svg>
+                    </div>
                   </button>
                   <span>{{ file.name }}</span>
                 </li>
               </ul>
             </div>
           </div>
-          <CandidatesTable :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription' :ranking="ranking" @updateRanking="updateRanking"/>
-          <RankingCandidates :results="results" :ranking="ranking" />
+          <CandidatesTable :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription' :ranking="ranking" @updateRanking="updateRanking" />
+          <RankingCandidates :ranking="ranking" />
         </div>
       </div>
     </div>
     <div v-if="showConfirmation" class="confirmation-message">
       <p>Remove file permanently?</p>
-      <div class="confirmation-divttons">
+      <div class="confirmation-buttons">
         <button @click="confirmRemove" class="confirm-button">Yes</button>
         <button @click="cancelRemove" class="cancel-button">No</button>
       </div>
@@ -74,17 +92,12 @@ export default {
       type: Array,
       required: true,
     },
-    results: {
-      type: Array,
-      required: true,
-    },
-    jobTitle:{
+    jobTitle: {
       type: String
     },
-    jobDescription:{
+    jobDescription: {
       type: String
-    },
-    greenIcon: Boolean, 
+    }
   },
   data() {
     return {
@@ -98,20 +111,16 @@ export default {
     };
   },
   computed: {
-    pdfIconClass() {
-      const iconColor = this.localPdfFiles.length > this.pdfFiles.length ? 'green' : 'red';
-      return `pdf-icon ${iconColor}-icon`;
-    },
     sidebarClass() {
       return {
         sidebar: true,
-        hidden: !this.showSidebar, 
+        hidden: !this.showSidebar,
       };
     },
   },
-  mounted() { 
+  mounted() {
     this.dontShowAgain = false;
-    this.showConfirmation = false; 
+    this.showConfirmation = false;
     this.showPublications - false;
     console.log('dontShowAgain:', this.dontShowAgain);
 
@@ -126,15 +135,10 @@ export default {
     },
     removeFile(index) {
       if (index !== null && index < this.localPdfFiles.length) {
-        this.animateRemoved = true;
-        this.animateRemove = true; 
-
-        setTimeout(() => {
-          this.animateRemoved = false;
-          this.animateRemove = false; 
-          this.localPdfFiles.splice(index, 1);
-          this.updatePdfFiles();
-        }, 2000); 
+        this.animateRemoved = false;
+        this.animateRemove = false;
+        this.localPdfFiles.splice(index, 1);
+        this.updatePdfFiles();
       }
     },
     updateLocalPdfFiles(pdfFiles) {
@@ -196,292 +200,30 @@ export default {
       )
       tabItem.classList.add('active')
       tabContent.classList.add('active')
+      this.$store.dispatch('setFunctionName', '');
     },
     candidateEditUrl({ id }) {
       const inputRow = document.getElementById(id)
       inputRow.classList.toggle('active')
     },
+    // call backend endpoint and on finish close the url input
     saveUrl({ id }) {
-      // call backend endpoint and on finish close the url input
       const inputRow = document.getElementById(id)
       inputRow.classList.remove('active')
     },
+    // show the publivations
     publicationEdit() {
       this.showPublications = true
     },
-    closeDialog() {
-      this.showPublications = false
-    },
     candidateForm(event) {
       event.preventDefault()
-      //write some code
     }
   },
 };
 </script>
 
-<style scoped>
-.sidebar-container {
-  display: flex;
-  align-items: flex-start;
-}
-
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0px;
-  /* Initially hide the sidebar */
-  width: 100%;
-  /* Adjust the width to make the sidebar wider */
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
-  transition: left 0.3s ease-in-out;
-  z-index: 10;
-  padding-top: 100px;
-}
-
-.sidebar.active {
-  left: 0;
-}
-
-.sidebar h3 {
-  font-size: 20px;
-  color: rgba(234, 182, 118, 0.8);
-  margin: auto;
-  padding-bottom: 5%;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: bold;
-}
-
-.pdf-icon-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: auto;
-}
-
-.file-count-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 4%;
-}
-
-.file-count {
-  color: rgba(15, 226, 247, 0.6);
-  font-weight: bold;
-  font-size: 30px;
-  font-family: 'Montserrat', sans-serif;
-  margin-left: 8px;
-  padding-left: 1%;
-}
-
-.pdf-icon {
-  content: url('~@/assets/pdf-image.svg');
-  filter: invert(100%);
-  width: 30px;
-  height: 30px;
-  padding-right: 1%;
-}
-
-.sidebar.hidden {
-  left: -13px;
-}
-
-.files-container {
-  flex: 1;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: stretch;
-  overflow: auto;
-}
-
-.uploaded-files-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.uploaded-files-list li {
-  color: white;
-  padding-bottom: 4%;
-  border-bottom: 1px solid rgba(15, 226, 247, 0.6);
-  text-align: center;
-}
-
-.uploaded-files-list li:last-child {
-  border-bottom: none;
-  padding-bottom: 8%;
-}
-
-.uploaded-files-list li {
-  word-wrap: break-word;
-  white-space: normal;
-}
-
-.file-list-item {
-  color: white;
-  margin-bottom: 5px;
-  padding-bottom: 2px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
-  /* Add a border between list items */
-  text-align: center;
-  /* Align the text to the center */
-  /* Apply word wrapping to the list items */
-  word-wrap: break-word;
-  white-space: normal;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: bold;
-  /* Make the text bold */
-}
-
-.remove-button {
-  border: 0;
-  border-radius: 50%;
-  padding: 0;
-  cursor: pointer;
-  margin-left: 94%;
-  margin-top: 1%;
-  display: flex;
-  width: 5%;
-  height: 5%;
-  transition: background-color 0.4s ease-in-out;
-  background: transparent
-}
-
-.remove-icon {
-  width: 100%;
-  height: 100%;
-  filter: invert(100%);
-  padding-left: 15%;
-}
-
-
-.confirmation-message {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  width: 250px;
-  transform: translate(-50%, -50%);
-  max-height: calc(100% - 40px);
-  overflow-y: auto;
-  background-color: rgba(0, 0, 0, 0.9);
-  border-radius: 5px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 999;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.9);
-  border: 2px solid rgba(234, 182, 118, 0.8);
-  border-top: 2px solid rgba(234, 182, 118, 0.8);
-}
-
-.confirmation-message p {
-  color: #0fe2f7;
-  font-size: 14px;
-  font-family: 'Montserrat', sans-serif;
-  margin-bottom: 10px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.confirmation-message label {
-  color: white;
-  font-size: 12px;
-  font-family: 'Montserrat', sans-serif;
-}
-
-.confirmation-buttons {
-  display: flex;
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.confirm-button,
-.cancel-button {
-  margin-top: 0;
-  padding: 5px 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-family: 'Montserrat', sans-serif;
-  font-weight: bold;
-}
-
-.confirm-button {
-  background-color: rgba(234, 182, 118, 0.8);
-  color: white;
-  margin-right: 5px;
-}
-
-.cancel-button {
-  background-color: rgba(255, 255, 255, 0.2);
-  color: white;
-}
-
-.confirmation-message input[type="checkbox"] {
-  margin-right: 5px;
-  vertical-align: middle;
-}
-
-.animate-remove {
-  animation: colorChange 2s;
-  transition: filter 3s ease-in-out;
-}
-
-.tabs-wrapper {
-  max-width: 900px;
-  width: 100%;
-}
-
-.tab-actions {
-  display: flex;
-  margin-left: -5px;
-  margin-top: -5px;
-  justify-content: space-evenly;
-  margin-bottom: 20px;
-}
-
-.tab-item {
-  margin-left: 5px;
-  margin-top: 5px;
-}
-
-.tab-item .tab-title {
-  font-size: 18px;
-  line-height: 1.2;
-  display: block;
-  font-weight: 700;
-  cursor: pointer;
-
-}
-
-.tab-item .tab-title:hover {
-  opacity: 0.8;
-  transition: all 0.3s ease;
-}
-
-.tab-item.active .tab-title {
-  border-bottom: 1px solid rgba(234, 182, 118, 0.8);
-}
-
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-
+<style src="./SidebarContainer.css">
+/* LIST */
 .list {
   flex: 0 0 50%;
   max-width: 50%;
@@ -503,5 +245,5 @@ export default {
   padding: 0;
   margin: 0;
 }
-
 </style>
+

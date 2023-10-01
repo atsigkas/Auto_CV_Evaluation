@@ -66,10 +66,10 @@
     width: 64px;
     height: 64px;
     margin: 8px;
-    border: 8px solid rgb(49, 247, 253);
+    border: 8px solid rgba(234, 182, 118, 0.8);
     border-radius: 50%;
     animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    border-color: rgb(49, 247, 253) transparent transparent transparent;
+    border-color:  rgba(234, 182, 118, 0.8) transparent transparent transparent;
   }
   .spinner div:nth-child(1) {
     animation-delay: -0.45s;

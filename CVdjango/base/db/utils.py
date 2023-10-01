@@ -32,29 +32,23 @@ class MongoDBHandler:
             return None, None
 
     def find_document(self, collection, candidate):
+        query = [{"author": candidate["author"]}]
+        if candidate["email"] != "Unknown": query.append({"email": candidate["email"]})
+        if candidate["phone"] != "Unknown": query.append({"phone": candidate["phone"]})
         try:
-            return collection.find(
-                {
-                    "$or": [
-                        {"author": candidate["author"]},
-                        {"email": candidate["email"]},
-                        {"phone": candidate["phone"]}
-                    ]
-                }
-            )
+            return collection.find({"$or": query})
         except errors.ServerSelectionTimeoutError as err:
             print(f"Find_one() ERROR: {err}")
             return None
 
     def find_document_after_pdfs(self, collection, candidate):
+        query = [{"author": candidate["author"]}]
+        if candidate["email"] != "Unknown": query.append({"email": candidate["email"]})
+        if candidate["phone"] != "Unknown": query.append({"phone": candidate["phone"]})
         try:
             return collection.find(
                 {
-                    "$or": [
-                        {"author": candidate["author"]},
-                        {"email": candidate["email"]},
-                        {"phone": candidate["phone"]}
-                    ]
+                    "$or":query
                 },
                 {
                     "researchgate":0,

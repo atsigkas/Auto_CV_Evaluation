@@ -1,18 +1,11 @@
 from django.shortcuts import render
-from django.http import HttpResponse
-from .db import utils
 from .scrapers import main
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework import serializers
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import os
 from .PARTF.ExtractInfo_part1_python import main
 from .scrapers.scrapy_researchgate import update_candidate_profile
 from .scrapers.scrapy_researchgate import ranking
-from .scrapers.saveURl import *
 import json
 
 

@@ -24,8 +24,8 @@ class ResearchGateScraper:
             links = soup.find_all('a', class_='nova-legacy-e-link nova-legacy-e-link--color-inherit nova-legacy-e-link--theme-bare',href=True)
             for link in links:
                 href = link.get('href')
-                print(href)
                 if "researchgate.net/publication" in href:
+                    print(href)
                     publication = {
                         "url": href,
                         "title": link.get_text(),
@@ -37,16 +37,23 @@ class ResearchGateScraper:
                     }
                     self.researchgate_publications.append(publication)
                     print(len(self.researchgate_publications))
-            paginations = soup.find_all('a', class_='nova-legacy-c-button nova-legacy-c-button--align-center nova-legacy-c-button--radius-m nova-legacy-c-button--size-s nova-legacy-c-button--color-grey nova-legacy-c-button--theme-bare',href=True)
+            paginations = soup.find_all('a',class_='nova-legacy-c-button nova-legacy-c-button--align-center nova-legacy-c-button--radius-m nova-legacy-c-button--size-s nova-legacy-c-button--color-grey nova-legacy-c-button--theme-bare',href=True)
             print(paginations)
+            page_numbers = []
             for pagination in paginations:
+                span = pagination.find('span', class_='nova-legacy-c-button__label')
+                if span is not None:
+                    page_numbers.append(span.text)
+
+            print(page_numbers)
+            for pagination in page_numbers:
                 try:
-                    print('Page:'+pagination)
-                    url_split = pagination['href'].split('/')[-1]
-                    print(url_split)
-                    if str(i+1) in url_split:
-                        response = get_proxy_url(url + '/' + str(i+1), True)
-                        return self.find_all_papers( url, i+1)
+                    #print('Page:'+pagination)
+                    #url_split = pagination['href'].split('/')[-1]
+                    #print(url_split)
+                    #if str(i+1) in url_split:
+                    #response = get_proxy_url(url + '/' + str(i+1), True)
+                    return self.find_all_papers( url, i+1)
                 except Exception as error:
                     print("Error in Pagination")
                     print(error)
@@ -63,7 +70,7 @@ class ResearchGateScraper:
         """
         for i,publication in enumerate(self.candidate['publication']):
             for researchgate_publication in self.researchgate_publications:
-                if similarity(publication['title'],researchgate_publication['title'])>0.8:
+                if similarity(publication['title'].lower(),researchgate_publication['title'].lower())>0.8:
                     response = get_proxy_url(researchgate_publication['url'],True)
 
                     # Create a BeautifulSoup object and specify the parser

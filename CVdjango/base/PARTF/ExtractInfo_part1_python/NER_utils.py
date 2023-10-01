@@ -8,7 +8,7 @@ def initialize_stanford_ner():
     stanford_ner_jar = r'C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\PARTF\stanford-ner-4.2.0\stanford-ner-2020-11-17\stanford-ner-4.2.0.jar'
 
     # Set the environment variable for the Java runtime (replace 'java_path' with your Java installation path)
-    java_path = '/path/to/java/bin/java'
+    java_path = 'C:/Program Files/Java/jdk-21/bin/java.exe'
     os.environ['JAVAHOME'] = java_path
 
     # Initialize the Stanford NER tagger

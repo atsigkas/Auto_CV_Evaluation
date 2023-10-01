@@ -20,9 +20,9 @@ def similarity(a, b):
 
 RESEARCHGATE = True
 GOOGLE = False
-THREADING = False
+THREADING = True
 
-def process_candidate(candidate,mongo_handler,client,position,candidates_scores):
+def process_candidate(candidate,mongo_handler,client):
     print(f"The Author : '{candidate['author']}'.")
     if client:
         found = False
@@ -33,18 +33,16 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
             finding_results.append(i)
         if finding_results:
             for profile in finding_results:
-                print(profile['email'] )
-                print(candidate["email"])
                 if found:
                     break
-                if profile['email'] == candidate["email"] or profile['phone'] == candidate["phone"]:
+                if (profile['email'] == candidate["email"] and candidate["email"] != "Unknown") or (profile['phone'] == candidate["phone"] and candidate["phone"] != "Unknown"):
                     found = True
                     break
                 for pub in candidate["publication"]:
                     if found:  # Check the flag at the start of the outer loop
                         break
                     for pub_in_database in profile["researchgate"]:
-                        if pub['title'] == pub_in_database['title']:
+                        if pub['title'] == pub_in_database['title'] and profile["author"] == candidate["author"]:
                             found = True
                             break
 
@@ -103,55 +101,55 @@ def process_candidate(candidate,mongo_handler,client,position,candidates_scores)
 
                 if len(removed_publications)>0 or len(added_publications)>0:
                     can.update_candidate(col)
-
-                #position_embedding = specter_embedding(position.title, position.abstract)
-                #candidates_scores.append(mean_publications(can.candidate,position_embedding))
             else:
                 print(f"The Author wasn't found : '{candidate['author']}'.")
 
         else:
             if candidate['author'] is not None:
-                print("Insert the author")
-                can = Candidate()
-                if RESEARCHGATE:
-                    researchgate = Researchgate(candidate, "site:researchgate.net")
-                    researchgate.search_author("researchgate.net/publication")
+                if len(candidate["publication"])>0:
+                    print("Insert the author")
+                    can = Candidate()
+                    if RESEARCHGATE:
+                        researchgate = Researchgate(candidate, "site:researchgate.net")
+                        researchgate.search_author("researchgate.net/publication")
 
-                    researchgate = ResearchGateScraper(researchgate.candidate)
-                    url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
-                    researchgate.find_all_papers(url, 1)
-                    researchgate.check_papers()
+                        researchgate = ResearchGateScraper(researchgate.candidate)
+                        url="https://www.researchgate.net/"+researchgate.candidate['researchgate_url']
+                        researchgate.find_all_papers(url, 1)
+                        researchgate.check_papers()
 
-                    can.override_data(researchgate.candidate)
+                        can.override_data(researchgate.candidate)
 
-                if GOOGLE:
-                    scholargoogle = Scholar(candidate, "site:scholar.google.com")
-                    scholargoogle.search_author("scholar.google.com/citations")
+                    if GOOGLE:
+                        scholargoogle = Scholar(candidate, "site:scholar.google.com")
+                        scholargoogle.search_author("scholar.google.com/citations")
 
-                    scholar_api=ScholarAPI(candidate)
-                    scholar_api.check_papers()
+                        scholar_api=ScholarAPI(candidate)
+                        scholar_api.check_papers()
 
-                    can.override_data(scholar_api.candidate)
+                        can.override_data(scholar_api.candidate)
 
-                publications_specter_embedding(can.candidate)
-                update_embedding(can.candidate, col)
-                #position_embedding = specter_embedding(position.title, position.abstract)
-                #candidates_scores.append(mean_publications(can.candidate, position_embedding))
+                    can.insert_candidate(col)
 
+                    publications_specter_embedding(can.candidate)
+                    update_embedding(can.candidate, col)
+                else:
+                    can = Candidate(candidate)
+                    can.insert_candidate(col)
 
 def find_ranking(position_title,position_description,candidates):
     start_time = time.time()
     core_crawling()
+
+    # DB connection
     mongo_handler = MongoDBHandler("localhost", 27017)
     client = mongo_handler.connect()
-    candidates_scores = []
-    position = Position(position_title, position_description)
 
     if THREADING:
         # List to hold all threads
         threads = []
         for candidate in candidates:
-            t = threading.Thread(target=process_candidate, args=(candidate, mongo_handler,client,position,candidates_scores))
+            t = threading.Thread(target=process_candidate, args=(candidate, mongo_handler,client))
             t.start()
             threads.append(t)
 
@@ -159,7 +157,7 @@ def find_ranking(position_title,position_description,candidates):
             t.join()
     else:
         for candidate in candidates:
-            process_candidate(candidate,mongo_handler,client,position,candidates_scores)
+            process_candidate(candidate,mongo_handler,client)
 
 
 
@@ -182,21 +180,19 @@ def return_candidates(candidates,mongo_handler,client):
                 finding_results.append(i)
             if finding_results:
                 for profile in finding_results:
-                    print(profile['email'])
-                    print(candidate["email"])
                     if found:
                         break
-                    if profile['email'] == candidate["email"] or profile['phone'] == candidate["phone"]:
+                    if (profile['email'] == candidate["email"] and candidate["email"] != "Unknown") or (
+                            profile['phone'] == candidate["phone"] and candidate["phone"] != "Unknown"):
                         found = True
                         break
                     for pub in candidate["publication"]:
                         if found:  # Check the flag at the start of the outer loop
                             break
                         for pub_in_database in profile["researchgate"]:
-                            if pub['title'] == pub_in_database['title']:
+                            if pub['title'] == pub_in_database['title'] and profile["author"] == candidate["author"]:
                                 found = True
                                 break
-
                 if found:
                     print(f"The query  some Documents for the Candidate '{profile['author']}'.")
                     totalarticles = 0
@@ -275,6 +271,7 @@ def ranking(NotFoundPublications,candidates,jobTitle,jobDescription):
     position = Position(jobTitle, jobDescription)
     position_embedding = specter_embedding(position.title, position.abstract)
     for profile in candidates:
+        print(f"The candidate is the {profile['candidate']['author']}")
         can = Candidate(profile["candidate"])
         candidates_scores.append(mean_publications(can.candidate, position_embedding,NotFoundPublications))
     return rank_candidates(candidates_scores)

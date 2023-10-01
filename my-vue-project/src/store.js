@@ -1,8 +1,8 @@
-// store.js
 import { createStore } from 'vuex';
 
 export default createStore({
   state: {
+    functionName: '',
     spinner: {
       isVisible: false,
       message: ''
@@ -13,6 +13,10 @@ export default createStore({
     }
   },
   mutations: {
+    setFunctionName(state, functionName) {
+      state.functionName = functionName;
+      state.dialog.message = '';
+    },
     showSpinner(state, message) {
       state.spinner.isVisible = true;
       state.spinner.message = message;
@@ -27,10 +31,12 @@ export default createStore({
     },
     hideDialog(state) {
       state.dialog.isVisible = false;
-      state.dialog.message = '';
     }
   },
   actions: {
+    setFunctionName({ commit }, functionName) {
+      commit('setFunctionName', functionName);
+    },
     showSpinner({ commit }, message) {
       commit('showSpinner', message);
     },
@@ -43,6 +49,5 @@ export default createStore({
     hideDialog({ commit }) {
       commit('hideDialog');
     }
-  },
-  
+  }
 });

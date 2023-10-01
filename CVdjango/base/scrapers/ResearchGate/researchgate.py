@@ -11,18 +11,23 @@ class Researchgate(GoogleSearch):
 
     def search(self, response):
         soup = BeautifulSoup(response, 'html.parser')
+        max = 0
         found = False
+        max_href = ''
         for link in soup.find_all('a', href=True):
             if "profile" in link['href'] or "scientific-contributions" in link['href']:
                 print(f"Name of the Candidate:{self.candidate['author']}")
                 print(f"Name in the Publication:{link.text}")
-                print(f"the similarity:{similarity(self.candidate['author'], link.text)}")
-                if similarity(self.candidate['author'], link.text) > 0.7 and found is False:
+                print(f"the similarity:{similarity(self.candidate['author'].lower(), link.text.lower())}")
+                sim = similarity(self.candidate['author'].lower(), link.text.lower())
+                if sim > 0.7 and sim > max:
+                    max = sim
+                    max_href = link['href']
                     found = True
-                    #cleaned_url = link['href'].replace("\"", "").replace("\\", "")
-                    self.candidate['researchgate_url'] = link['href']
-                    print(f"We find the profile of the Author: {self.candidate['author']} . This is the name in the publication {link.text}")
-                    return self.candidate
+        if max !=0 and found:
+            self.candidate['researchgate_url'] = max_href
+            print(f"We find the profile of the Author: {self.candidate['author']}.")
+        return self.candidate
 
     def search_author(self, path):
         print('### Research Gate ###')

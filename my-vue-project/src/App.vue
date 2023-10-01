@@ -10,20 +10,20 @@
       </div>
       <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
       <h1>
-        <span class="blue">ev</span>
-        <span class="bluegreen">AI</span>
-        <span class="blue">.luator</span>
+        <span class="letters-color-blue">ev</span>
+        <span class="letters-color-gold">AI</span>
+        <span class="letters-color-blue">.luator</span>
       </h1>
       <h2>"Artificially Transparent CV Evaluation"</h2>
     </header>
     <main>
       <div class="job-container">
         <div class="job-title-container">
-          <label for="job-title">Job Title</label>
+          <label for="job-title">Academic Position Title</label>
           <input id="job-title" v-model="jobTitle" class="job-title-textarea" />
         </div>
         <div class="job-description-container">
-          <label for="job-description">Job Description</label>
+          <label for="job-description">Academic Position Description</label>
           <textarea id="job-description" v-model="jobDescription" class="job-description-textarea"></textarea>
         </div>
       </div>
@@ -38,16 +38,16 @@
           </svg>
           Upload PDF
         </button>
+        <div class="file-size-info">
+      Max File Size 5MB
+    </div>
       </div>
       <div class="submit-container"> <!-- Wrap the submit button in a container -->
         <button class="submit-button" :disabled="isButtonDisabled" @click="submitForm">Submit</button>
       </div>
     </div>
-    <div class="file-size-info">
-      Max File Size 5MB
-    </div>
   </div>
-  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :results="results" :jobTitle='jobTitle' :jobDescription='jobDescription' :greenIcon="greenIcon"
+  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription'
     @update-pdf-files="updatePdfFiles" />
   <SpinnerLoading />
   <DialogComponent />
@@ -68,19 +68,11 @@ export default {
   },
   data() {
     return {
-      cvText: "",
       jobTitle: "",
       jobDescription: "",
-      showPopup: false,
       candidates:[],
-      results: [],
       pdfFiles: [],
-      showSidebar: false,
-      greenIcon: false, // Add this property
-      animateRemoved: false,
-      errorMessage: 'No Candidates',
-      showErrorPopup: false,
-      loading: false,
+      showSidebar: false
     }
   },
   computed: {
@@ -88,9 +80,18 @@ export default {
       const disabled = !this.pdfFiles || this.pdfFiles.length === 0 || !this.jobTitle || !this.jobDescription;
       console.log('Button Disabled:', disabled);  // Log the value
       return disabled;
+    },
+    functionName() {
+      return this.$store.state.functionName;
     }
-  }
-  ,
+  },
+  watch: {
+    functionName(newVal) {
+      if (newVal && typeof this[newVal] === 'function') {
+        this[newVal]();
+      }
+    }
+  },
   methods: {
     showDialog(text) {
       this.$store.dispatch('showDialog', text);
@@ -107,30 +108,22 @@ export default {
     openFileInput() {
       this.$refs.fileInput.click();
     },
-    async handleFileChange(event) {
+    handleFileChange(event) {
       const files = event.target.files;
       const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
 
       if (pdfFiles.length > 0) {
-        this.greenIcon = true; // Set the icon color to green
-
-        // Add a delay to ensure the animation occurs only after the file is uploaded
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Delay for 500ms
-
-        this.greenIcon = false; // Reset the icon color
-
-        // Append the new PDF files to the existing list
         this.pdfFiles = [...this.pdfFiles, ...pdfFiles];
-
-        // Use $nextTick to ensure the DOM has been updated before accessing refs
         this.$nextTick(() => {
           if (this.$refs.sidebarContainer) {
             this.$refs.sidebarContainer.updateLocalPdfFiles(this.pdfFiles);
           }
         });
+        this.showDialog("Pdf are uploaded.")
       }
       event.target.value = null;
     },
+
     uploadFiles() {
       this.showSpinner("Waiting to find the Candidates.It will take some time.")
       const formData = new FormData();
@@ -153,17 +146,17 @@ export default {
         .then(response => {
           this.hideSpinner()
           if (!response.data.candidates) {
-            this.showDialog("Something went wrong")
+            this.showDialog("Something went wrong.")
           } else {
             this.candidates = response.data.candidates;
-            this.showDialog("We found the candidates")
+            this.showDialog("We found the candidates.")
           }
         })
         .catch(error => {
-          this.hideSpinner()
-          this.showDialog("We had an unexpected error:"+ error)
+          this.hideSpinner();
+          this.showDialog("We had an unexpected error:"+ error.response.data.message);
         });
-        
+      this.pdfFiles=[];
     }
     ,
     submitForm() {
@@ -171,6 +164,7 @@ export default {
     },
     toggleSidebar() {
       this.showSidebar = !this.showSidebar;
+      this.$store.dispatch('setFunctionName', '');
     },
     updatePdfFiles(pdfFiles) {
       this.pdfFiles = pdfFiles;
