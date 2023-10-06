@@ -1,6 +1,6 @@
-from CVdjango.base.scrapers.google_search import GoogleSearch
+from ..google_search import GoogleSearch
 from bs4 import BeautifulSoup
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
 import requests
 from scholarly import scholarly
 from urllib.parse import urlparse, parse_qs
@@ -28,14 +28,15 @@ class Scholar(GoogleSearch):
 
     def __init__(self, candidate, website):
         super().__init__(candidate, website)
+        self.publication_index=0
 
 
 
     def search(self, response,url):
-        soup = BeautifulSoup(response.text, 'html.parser')
+        soup = BeautifulSoup(response, 'html.parser')
         author = extract_text(soup,'div#gsc_prf_in')
-        print(self.candidate['author'], author, similarity(self.candidate['author'], author))
-        if similarity(self.candidate['author'], author) > 0.7:
+        print(self.candidate['name'].lower(), author.lower(), similarity(self.candidate['name'].lower(), author.lower()))
+        if similarity(self.candidate['name'].lower(), author.lower()) > 0.7:
             author_id=extract_scholar_id(url)
             try:
                 author = scholarly.search_author_id(author_id)
@@ -45,8 +46,8 @@ class Scholar(GoogleSearch):
             print(json.dumps(author_filled, indent=4))
             for publication in author_filled["publications"]:
                 print(publication["bib"]["title"])
-                print(self.candidate['publication'][0]['title'])
-                if similarity(self.candidate['publication'][0]['title'], publication["bib"]["title"]):
+                print(self.candidate['publications'][self.publication_index]['title'])
+                if similarity(self.candidate['publications'][self.publication_index]['title'], publication["bib"]["title"]):
                     self.candidate['googlescholar_url'] = url
                     return self.candidate
 
@@ -57,13 +58,12 @@ class Scholar(GoogleSearch):
             return callback(response,url)
 
     def search_author(self, path):
-        author_url = self.candidate['author'].replace(" ", "+")
-        paper_url = self.candidate['publication'][0]['title'].replace(" ", "+")
+        author_url = self.candidate['name'].lower().replace(" ", "+")
+        paper_url = self.candidate['publications'][self.publication_index]['title'].replace(" ", "+")
         url = "https://www.google.com/search?q="+self.website+'+'+author_url
 
-        response = requests.get(get_proxy_url(url,True))
-        webpage_html_content = response.text
-        soup = BeautifulSoup(webpage_html_content, "html.parser")
+        response = get_proxy_url(url,True)
+        soup = BeautifulSoup(response, "html.parser")
         links = soup.find_all('a', href=True)
         urls = []
 
@@ -71,12 +71,16 @@ class Scholar(GoogleSearch):
             url = link['href']
             if path in url:
                 urls.append(url)
-        print(urls)
+
         for url in urls:
             try:
-                self.get_and_apply(url, self.search)
+                response=get_proxy_url(url,True)
+                self.search(response,url)
                 if self.candidate['googlescholar_url']:
                     return self.candidate
             except Exception as error:
-                print("Problem Found Author")
-                print(error)
+                print(f"Scholar: Problem Found Author {error}")
+        if self.publication_index < len(self.candidate['publications']):
+            self.publication_index += 1
+            self.search_author(path)
+        return

@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
+import json
 
 
 class ResearchGateScraper:
@@ -9,16 +10,22 @@ class ResearchGateScraper:
         self.researchgate_publications = []
 
     def find_all_papers(self, url, i):
+        """
+        This function is retrospective and takes the all the publications links
+        @param self
+        @return: same function
+        """
         try:
             print('Page:'+str(i))
             print(f"Profile Author in ResearchGate:{url}")
-            response = requests.get(get_proxy_url(url + '/' + str(i), True))
-            soup = BeautifulSoup(response.text, 'html.parser')
+            response = get_proxy_url(url + '/' + str(i), True)
+
+            soup = BeautifulSoup(response, 'html.parser')
             links = soup.find_all('a', class_='nova-legacy-e-link nova-legacy-e-link--color-inherit nova-legacy-e-link--theme-bare',href=True)
             for link in links:
                 href = link.get('href')
-                print(href)
                 if "researchgate.net/publication" in href:
+                    print(href)
                     publication = {
                         "url": href,
                         "title": link.get_text(),
@@ -30,109 +37,97 @@ class ResearchGateScraper:
                     }
                     self.researchgate_publications.append(publication)
                     print(len(self.researchgate_publications))
-            paginations = soup.find_all('a', class_='nova-legacy-c-button nova-legacy-c-button--align-center nova-legacy-c-button--radius-m nova-legacy-c-button--size-s nova-legacy-c-button--color-grey nova-legacy-c-button--theme-bare',href=True)
+            paginations = soup.find_all('a',class_='nova-legacy-c-button nova-legacy-c-button--align-center nova-legacy-c-button--radius-m nova-legacy-c-button--size-s nova-legacy-c-button--color-grey nova-legacy-c-button--theme-bare',href=True)
             print(paginations)
+            page_numbers = []
             for pagination in paginations:
+                span = pagination.find('span', class_='nova-legacy-c-button__label')
+                if span is not None:
+                    page_numbers.append(span.text)
+
+            print(page_numbers)
+            for pagination in page_numbers:
                 try:
-                    print(pagination)
-                    url_split = pagination['href'].split('/')[-1]
-                    print(url_split)
-                    if str(i+1) in url_split:
-                        response = requests.get(get_proxy_url(url + '/' + str(i+1), True))
-                        return self.find_all_papers( url, i+1)
+                    #print('Page:'+pagination)
+                    #url_split = pagination['href'].split('/')[-1]
+                    #print(url_split)
+                    #if str(i+1) in url_split:
+                    #response = get_proxy_url(url + '/' + str(i+1), True)
+                    return self.find_all_papers( url, i+1)
                 except Exception as error:
-                    print(error)
                     print("Error in Pagination")
+                    print(error)
             return self.researchgate_publications
         except Exception as error:
+            print("Problem in find_all_papers")
             print(error)
-            print("Problem")
+
 
     def check_papers(self):
-        for i,publication in enumerate(self.candidate['publication']):
+        """
+        We go to a publication page and we are extracting the necessary information
+        :return: It doesn't return something
+        """
+        for i,publication in enumerate(self.candidate['publications']):
             for researchgate_publication in self.researchgate_publications:
-                if similarity(publication['title'],researchgate_publication['title'])>0.8:
-                    response = requests.get(get_proxy_url(researchgate_publication['url'],True))
-                    # Get the content of the response
-                    webpage_html_content = response.text
+                if similarity(publication['title'].lower(),researchgate_publication['title'].lower())>0.8:
+                    response = get_proxy_url(researchgate_publication['url'],True)
 
                     # Create a BeautifulSoup object and specify the parser
-                    soup = BeautifulSoup(webpage_html_content, "html.parser")
+                    soup = BeautifulSoup(response, "html.parser")
 
-                    '''
-                    researchgate_publication['type'] = soup.select_one(".nova-legacy-e-badge.nova-legacy-e-badge--color-green.nova-legacy-e-badge--display-inline.nova-legacy-e-badge--luminosity-high.nova-legacy-e-badge--size-l.nova-legacy-e-badge--theme-solid.nova-legacy-e-badge--radius-m.research-detail-header-section__badge").text
-                    researchgate_publication['year'] = soup.select_one("div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child").text
-                    researchgate_publication['abstract'] = soup.select_one("div.nova-legacy-e-text.nova-legacy-e-text--size-m.nova-legacy-e-text--family-sans-serif.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-800.research-detail-middle-section__abstract").text
-                    researchgate_publication['title']  = soup.select_one("h1.nova-legacy-e-text.nova-legacy-e-text--size-xl.nova-legacy-e-text--family-display.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-900.research-detail-header-section__title").text
-                    researchgate_publication['citation'] = soup.select_one("button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type").text
-                    
-                    try:
-                        researchgate_publication['type'] = soup.select_one(
-                            ".nova-legacy-e-badge.nova-legacy-e-badge--color-green.nova-legacy-e-badge--display-inline.nova-legacy-e-badge--luminosity-high.nova-legacy-e-badge--size-l.nova-legacy-e-badge--theme-solid.nova-legacy-e-badge--radius-m.research-detail-header-section__badge").text
-                    except AttributeError:
-                        researchgate_publication['type'] = ''  # or some other default value
-
-                    try:
-                        researchgate_publication['year'] = soup.select_one(
-                            "div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child").text
-                    except AttributeError:
-                        researchgate_publication['year'] = ''  # or some other default value
-
-                    try:
-                        researchgate_publication['abstract'] = soup.select_one(
-                            "div.nova-legacy-e-text.nova-legacy-e-text--size-m.nova-legacy-e-text--family-sans-serif.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-800.research-detail-middle-section__abstract").text
-                    except AttributeError:
-                        researchgate_publication['abstract'] = ''  # or some other default value
-
-                    try:
-                        researchgate_publication['title'] = soup.select_one(
-                            "h1.nova-legacy-e-text.nova-legacy-e-text--size-xl.nova-legacy-e-text--family-display.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-900.research-detail-header-section__title").text
-                    except AttributeError:
-                        researchgate_publication['title'] = ''  # or some other default value
-
-                    try:
-                        researchgate_publication['citation'] = soup.select_one(
-                            "button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type").text
-                    except AttributeError:
-                        researchgate_publication['citation'] = ''  # or some other default value
-                    '''
+                    print(researchgate_publication['title'])
                     selectors = {
                         'type': ".nova-legacy-e-badge.nova-legacy-e-badge--color-green.nova-legacy-e-badge--display-inline.nova-legacy-e-badge--luminosity-high.nova-legacy-e-badge--size-l.nova-legacy-e-badge--theme-solid.nova-legacy-e-badge--radius-m.research-detail-header-section__badge",
                         'year': "div.research-detail-header-section__metadata > div:first-child > ul:first-child > li:first-child",
                         'abstract': "div.nova-legacy-e-text.nova-legacy-e-text--size-m.nova-legacy-e-text--family-sans-serif.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-800.research-detail-middle-section__abstract",
                         'title': "h1.nova-legacy-e-text.nova-legacy-e-text--size-xl.nova-legacy-e-text--family-display.nova-legacy-e-text--spacing-none.nova-legacy-e-text--color-grey-900.research-detail-header-section__title",
-                        'citation': "button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type"
+                        'citation': "button:first-of-type > div:first-of-type > div:first-of-type > h2:first-of-type",
+                        'name_of_type':"div:first-of-type > ul:first-of-type > li:nth-child(2)>a"
                     }
+
+                    candidate_li_elements = soup.find_all(
+                        'li',
+                        {'class': 'nova-legacy-e-list__item'}
+                    )
+
+                    # Check the text of each element to find the ones containing 'Conference:'
+                    conference_li = next(
+                        (el for el in candidate_li_elements if 'conference:' in el.get_text(strip=True).lower()), None)
+
+                    # If the element is found, extract its text
+                    print('###')
+                    print(conference_li)
+
+                    if conference_li:
+                        conference_text = conference_li.get_text(strip=True)
+                        #conference_text = conference_text.replace('Conference: ', '')
+                    else:
+                        conference_text = "NO"
 
                     for key, selector in selectors.items():
                         researchgate_publication[key] = extract_text(soup, selector)
 
-                    self.candidate['publication'][i]['researchgate_url']=researchgate_publication['url']
-                    self.candidate['publication'][i]['abstract'] = researchgate_publication['abstract']
+                    self.candidate['publications'][i]['researchgate_url'] = researchgate_publication['url']
+                    self.candidate['publications'][i]['abstract'] = researchgate_publication['abstract']
+                    self.candidate['publications'][i]['type'] = researchgate_publication['type']
+                    if conference_text=="NO":
+                        self.candidate['publications'][i]['name_of_type'] = researchgate_publication['name_of_type']
+                    else:
+                        self.candidate['publications'][i]['name_of_type'] = conference_text
+                        researchgate_publication['name_of_type']=conference_text
+                    # January 2006
+                    if researchgate_publication['year'] != "Unknown":
+                        researchgate_publication['year'] = researchgate_publication['year'].split()[1]
+                        self.candidate['publications'][i]['year'] = researchgate_publication['year']
 
-                    print(researchgate_publication)
+                    print(json.dumps(researchgate_publication, indent=4))
                     break
-
-
-        for researchgate_publication in self.researchgate_publications:
-            print("URL:", researchgate_publication['url'])
-            print("Title:", researchgate_publication['title'])
-            print("Year:", researchgate_publication['year'])
-            print("Abstract:", researchgate_publication['abstract'])
-            print("Citation:", researchgate_publication['citation'])
-            print("Topics:", researchgate_publication['topics'])
-            print("Type:", researchgate_publication['type'])
-            print("-----")
-        for pub in self.candidate['publication']:
-            print("Title:", pub['title'])
-            print("ResearchGate URL:", pub['researchgate_url'])
-            print("Google Scholar URL:", pub['googlescholar_url'])
-            print("Semantic URL:", pub['sematic_url'])
-            print("-----")
         self.candidate['researchgate'] = self.researchgate_publications
+
     def update_publication(self, col):
         try:
-            for i, pub in enumerate(self.candidate["publication"]):
+            for i, pub in enumerate(self.candidate["publications"]):
                 new_url = pub['researchgate_url']
                 abstract = pub['abstract']
                 # Update only the 'publication' list
@@ -152,6 +147,5 @@ class ResearchGateScraper:
             {'_id': self.candidate['_id']},
             {'$push': {"researchgate": {"$each": self.researchgate_publications}}}
         )
-
     def insert_researchgate_candidate(self, col):
         col.insert_one(self.candidate)

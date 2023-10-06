@@ -1,5 +1,4 @@
-from pymongo import MongoClient, errors, TEXT
-
+from pymongo import MongoClient, errors
 
 class MongoDBHandler:
     def __init__(self, domain, port):
@@ -11,10 +10,9 @@ class MongoDBHandler:
     def connect(self):
         try:
             self.client = MongoClient(host=[self.connection_string], serverSelectionTimeoutMS=2000)
-            print(f"Trying to connect to MongoDB server: {self.connection_string}")
-            print("server_info():", self.client.server_info())
+            print(f"Connected to MongoDB")
         except errors.ServerSelectionTimeoutError as err:
-            print(f"pymongo ERROR: {err}")
+            print(f"Failed to connect to MongoDB: {err}")
             self.client = None
         return self.client
 
@@ -31,15 +29,28 @@ class MongoDBHandler:
             return None, None
 
     def find_document(self, collection, candidate):
+        query = [{"name": candidate["name"]}]
+        if candidate["email"] != "Unknown": query.append({"email": candidate["email"]})
+        if candidate["phone"] != "Unknown": query.append({"phone": candidate["phone"]})
+        try:
+            return collection.find({"$or": query})
+        except errors.ServerSelectionTimeoutError as err:
+            print(f"Find_one() ERROR: {err}")
+            return None
+
+    def find_document_after_pdfs(self, collection, candidate):
+        query = [{"name": candidate["name"]}]
+        if candidate["email"] != "Unknown": query.append({"email": candidate["email"]})
+        if candidate["phone"] != "Unknown": query.append({"phone": candidate["phone"]})
         try:
             return collection.find(
                 {
-                    "$or": [
-                        {"author": candidate["author"]},
-                        {"email": candidate["email"]},
-                        {"phone": candidate["phone"]}
-                    ]
-                }
+                    "$or":query
+                },
+                {
+                    "researchgate":0,
+                    "googlescholar":0
+                 }
             )
         except errors.ServerSelectionTimeoutError as err:
             print(f"Find_one() ERROR: {err}")

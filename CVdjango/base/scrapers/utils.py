@@ -1,33 +1,62 @@
 from urllib.parse import urlencode
 from difflib import SequenceMatcher
+import requests
+from bson import ObjectId
+
+#API_KEY = '98042e97-cd60-49e0-b01a-12a9debe09c7'
+#https://proxy.scrapeops.io/v1/?
+
+# scrapeops
+SCRAPEOPS=False
+
+# scraperapi
+SCRAAPERAPI=False
+API_KEY='3e2b034a8797765ba1f14fa1f1f5078b'
+
+# flaresolverr
+FLARESOLVERR=True
 
 
-API_KEY = '98042e97-cd60-49e0-b01a-12a9debe09c7'
+
+def get_data(url,UsingProxy):
+    if FLARESOLVERR:
+        post_body = {
+            "cmd": "request.get",
+            "url": url,
+            "maxTimeout": 60000
+        }
+        response = requests.post('http://localhost:8191/v1', headers={'Content-Type': 'application/json'}, json=post_body)
+        response_json = response.json()
+        webpage_html_content = response_json["solution"]["response"]
+        return webpage_html_content
 
 
 def get_proxy_url( url, UsingProxy):
-    if UsingProxy is True:
-        payload = {'api_key': API_KEY, 'url': url}
-        proxy_url = 'https://proxy.scrapeops.io/v1/?' + urlencode(payload)
-        return proxy_url
+    if SCRAAPERAPI or SCRAPEOPS:
+        if UsingProxy is True:
+            payload = {'api_key': API_KEY, 'url': url}
+            proxy_url = 'http://api.scraperapi.com?' + urlencode(payload)
+            response = requests.post(url)
+            return response
+    elif FLARESOLVERR:
+        return get_data(url, UsingProxy)
     else:
-        return url
+        print("Enable Proxy")
 
 
 def similarity( a, b):
     return SequenceMatcher(None, a, b).ratio()
 
 def extract_text(soup, selector):
-    try:
-        element = soup.select_one(selector)
-        if element is not None:
-            result = element.text
-        else:
-            raise ValueError(f"No element found with selector '{selector}'.")
-    except AttributeError as e:
-        print(f"AttributeError encountered: {e}. Unable to extract text.")
-        raise
-    except Exception as e:
-        print(f"Unexpected error encountered: {e}. Unable to extract text.")
-        raise
+    element = soup.select_one(selector)
+    if element is not None:
+        result = element.text
+    else:
+        return 'Unknown'
+
     return result
+
+def json_serial(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    raise TypeError(f'Type not serializable: {type(obj)}')

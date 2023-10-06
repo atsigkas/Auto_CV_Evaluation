@@ -4,7 +4,7 @@ kai meta varaw gia ka8e publication api
 '''
 from urllib.parse import urlparse, parse_qs
 from scholarly import scholarly
-from CVdjango.base.scrapers.utils import *
+from ..utils import *
 import json
 import requests
 
@@ -34,7 +34,6 @@ class ScholarAPI:
         author_id = extract_scholar_id(self.candidate['googlescholar_url'])
         author = scholarly.search_author_id(author_id)
 
-        # fill author including their publications
         scholar_publications = scholarly.fill(author)
         for scholar_publication in author['publications']:
             pub = {
@@ -42,16 +41,16 @@ class ScholarAPI:
                 "title": scholar_publication['bib']['title'],
                 "year": '',
                 "abstract": '',
-                "citation": '',
                 "topics": '',
-                "type": '',
-                "embeddings": ''
+                "type": ''
             }
             self.scholar_publications.append(pub)
 
-        for i, publication in enumerate(self.candidate['publication']):
+        for i, publication in enumerate(self.candidate['publications']):
+            found=False
             for scholar_publication in self.scholar_publications:
-                if similarity(publication['title'], scholar_publication['title']) > 0.8:
+                if similarity(publication['title'], scholar_publication['title']) > 0.7:
+                    found = True
                     scholar_temp = {
                         "container_type": "Publication",
                         "source": "AUTHOR_PUBLICATION_ENTRY",
@@ -62,36 +61,35 @@ class ScholarAPI:
                         }
                     }
                     scholarly.fill(scholar_temp)
-                    print(json.dumps(scholar_temp, indent=4))
+
                     scholar_publication["title"] = scholar_temp["bib"]["title"] if "title" in scholar_temp["bib"] else "Unknown"
                     scholar_publication["year"] = int(scholar_temp["bib"]["pub_year"]) if "pub_year" in scholar_temp["bib"] else 0
                     scholar_publication["abstract"] = scholar_temp["bib"]["abstract"] if "abstract" in scholar_temp["bib"] else "Unknown"
                     scholar_publication["citation"] = scholar_temp["num_citations"] if "num_citations" in scholar_temp else "Unknow"
+                    if "conference" in scholar_temp["bib"]:
+                        scholar_publication["name_of_type"] = scholar_temp["bib"]["conference"]
+                        scholar_publication["type"] = "conference"
+                    elif "journal" in scholar_temp["bib"]:
+                        scholar_publication["name_of_type"] = scholar_temp["bib"]["journal"]
+                        scholar_publication["type"] = "journal"
+                    else:
+                        scholar_publication["type"] = "Unknown"
+                        scholar_publication["name_of_type"] = "Unknown"
 
-                    self.candidate['publication'][i]['googlescholar_url'] = scholar_publication['url']
+                    self.candidate['publications'][i]['googlescholar_url'] = scholar_publication['url']
+                    self.candidate['publications'][i]['abstract'] = scholar_publication['abstract']
+                    self.candidate['publications'][i]['type'] = scholar_publication['type']
+                    self.candidate['publications'][i]['name_of_type'] = scholar_publication['name_of_type']
 
                     break
 
-        for scholar_publication in self.scholar_publications:
-            print("URL:", scholar_publication['url'])
-            print("Title:", scholar_publication['title'])
-            print("Year:", scholar_publication['year'])
-            print("Abstract:", scholar_publication['abstract'])
-            print("Citation:", scholar_publication['citation'])
-            print("Topics:", scholar_publication['topics'])
-            print("Type:", scholar_publication['type'])
-            print("-----")
-        for pub in self.candidate['publication']:
-            print("Title:", pub['title'])
-            print("ResearchGate URL:", pub['researchgate_url'])
-            print("Google Scholar URL:", pub['googlescholar_url'])
-            print("Semantic URL:", pub['sematic_url'])
-            print("-----")
+            if not found:
+                self.scholar_publications.remove(scholar_publication)
         self.candidate['googlescholar'] = self.scholar_publications
 
     def update_publication(self, col):
         try:
-            for i, pub in enumerate(self.candidate["publication"]):
+            for i, pub in enumerate(self.candidate["publications"]):
                 new_url = pub['googlescholar_url']
                 print(new_url)
                 # Update only the 'publication' list

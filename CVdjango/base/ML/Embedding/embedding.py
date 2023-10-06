@@ -15,12 +15,10 @@ def specter_embedding(title , abstract):
 
 def publications_specter_embedding(author):
     try:
-        # author have the stuff inside
         embeddings = []
-        for pub in author["publication"]:
-            print("####### Embedding ############")
-            # Loop through each source array and try to find a match
-            for source_name in ['researchgate','googlescholar']:  # Add other sources as needed
+        print("####### Embeddings ############")
+        for pub in author["publications"]:
+            for source_name in ['researchgate','googlescholar']:
                 source_item = None
                 source_item_index = None
 
@@ -35,25 +33,22 @@ def publications_specter_embedding(author):
                     if not source_item.get('embedding', []):
                         embedding = specter_embedding(pub['title'], pub['abstract'])
                         pub["embedding"] = embedding
-                        print(embedding)
                         if source_item_index is not None:
-                            print(embedding)
                             author[source_name][source_item_index]['embedding'] = embedding
     except Exception as error:
         print(error)
 
 def update_embedding(authors_or_author, col):
         try:
-            print(authors_or_author.get('publication'))
-            print(authors_or_author['publication'])
             # Update the document if the field has changed
             result = col.update_one(
                 {"_id": authors_or_author['_id']},
                 {"$set": {
-                    "publication": authors_or_author['publication'],
+                    "publications": authors_or_author['publications'],
                     "researchgate": authors_or_author.get('researchgate', []),
                     "googlescholar": authors_or_author.get('googlescholar', [])
                 }}
             )
         except Exception as e:
             print(f" update_embedding - An error occurred: {e}")
+

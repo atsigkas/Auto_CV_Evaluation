@@ -1,0 +1,246 @@
+/* sidebar-container */
+.sidebar-container {
+    display: flex;
+    align-items: flex-start;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    transition: left 0.3s ease-in-out;
+    z-index: 10;
+    padding-top: 100px;
+    overflow: auto;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+/* tabs-wrapper */
+
+.tabs-wrapper {
+    max-width: 900px;
+    width: 100%;
+}
+
+.tab-actions {
+    display: flex;
+    margin-left: -5px;
+    margin-top: -5px;
+    justify-content: space-evenly;
+    margin-bottom: 20px;
+}
+
+.tab-item {
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.tab-item .tab-title {
+    font-size: 18px;
+    line-height: 1.2;
+    display: block;
+    font-weight: 700;
+    cursor: pointer;
+
+}
+
+.tab-item .tab-title:hover {
+    opacity: 0.8;
+    transition: all 0.3s ease;
+}
+
+.tab-item.active .tab-title {
+    border-bottom: 1px solid rgba(234, 182, 118, 0.8);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content-wrapper {
+    border: #0fe2f7;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* pdf-container */
+
+.pdf-icon-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+}
+
+.pdf-count-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4%;
+}
+
+.pdf-count {
+    color: var(--blue);
+    font-weight: bold;
+    font-size: 30px;
+    margin-left: 8px;
+    padding-left: 1%;
+}
+
+.pdf-icon {
+    content: url('~@/assets/pdf-image.svg');
+    filter: invert(100%);
+    width: 35px;
+    height: 35px;
+    padding-right: 1%;
+}
+
+
+.pdf-container {
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    overflow: auto;
+    max-height: 600px;
+}
+
+.uploaded-pdf-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.uploaded-pdf-list li {
+    color: white;
+    text-align: center;
+}
+
+
+.uploaded-pdf-list li {
+    word-wrap: break-word;
+    white-space: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pdf-list-item {
+    color: white;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+    font-weight: bold;
+    position: relative;
+    border: 1px solid rgba(234, 182, 118, 0.8);
+    padding: 30px 60px;
+    background-color: rgb(28 26 26);
+}
+
+.remove-button {
+    border: 0;
+    border-radius: 50%;
+    padding: 0;
+    cursor: pointer;
+    display: flex;
+    transition: background-color 0.4s ease-in-out;
+    background: transparent;
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.remove-icon {
+    width: 100%;
+    height: 100%;
+    filter: invert(100%);
+}
+
+
+/* confirmation-message */
+
+.confirmation-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 250px;
+    transform: translate(-50%, -50%);
+    max-height: calc(100% - 40px);
+    overflow-y: auto;
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 5px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 999;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.9);
+    border: 2px solid rgba(var(--gold), 0.8); 
+    border-top: 2px solid rgba(var(--gold), 0.8); 
+}
+
+.confirmation-message p {
+    color: var(--blue);
+    font-size: 14px;
+    margin-bottom: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.confirmation-message label {
+    color: white;
+    font-size: 12px;
+}
+
+.confirmation-message input[type="checkbox"] {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+.confirmation-buttons {
+    display: flex;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.confirm-button,
+.cancel-button {
+    margin-top: 0;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.confirm-button {
+    background-color: rgba(var(--gold), 0.8); 
+    color: white;
+    margin-right: 5px;
+}
+
+.cancel-button {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+
+
