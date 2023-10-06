@@ -1,29 +1,27 @@
 from .CORE.CORE import core_crawling
 from ..db.utils import *
+from .utils import json_serial
 from .ResearchGate.researchgate import *
 from .ResearchGate.researchgate_scraper import *
 from .Scholar.scholar import *
 from .Scholar.scholar_api import *
-from .candidate import *
+from .Candidate import *
 from .Position import *
 from ..ML.RankingCandinates.ranking_candinates_main import *
 import threading
 import time
-import printjson
-import queue
 import json
 from bson import ObjectId
 
 
-def similarity(a, b):
-    return SequenceMatcher(None, a, b).ratio()
 
 RESEARCHGATE = True
 GOOGLE = False
-THREADING = True
+THREADING = False
+
 
 def process_candidate(candidate,mongo_handler,client):
-    print(f"The Author : '{candidate['author']}'.")
+    print(f"The Author : '{candidate['name']}'.")
     if client:
         found = False
         db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
@@ -38,20 +36,20 @@ def process_candidate(candidate,mongo_handler,client):
                 if (profile['email'] == candidate["email"] and candidate["email"] != "Unknown") or (profile['phone'] == candidate["phone"] and candidate["phone"] != "Unknown"):
                     found = True
                     break
-                for pub in candidate["publication"]:
+                for pub in candidate["publications"]:
                     if found:  # Check the flag at the start of the outer loop
                         break
                     for pub_in_database in profile["researchgate"]:
-                        if pub['title'] == pub_in_database['title'] and profile["author"] == candidate["author"]:
+                        if pub['title'] == pub_in_database['title'] and profile["name"] == candidate["name"]:
                             found = True
                             break
 
             if found:
-                print(f"The query  some Documents for the Candidate '{profile['author']}'.")
+                print(f"The query  some Documents for the Candidate '{profile['name']}'.")
                 can = Candidate(profile)
 
-                old_set = set(obj["title"] for obj in can.candidate["publication"])
-                new_set = set(obj["title"] for obj in candidate["publication"])
+                old_set = set(obj["title"] for obj in can.candidate["publications"])
+                new_set = set(obj["title"] for obj in candidate["publications"])
 
                 removed_publications = old_set - new_set
 
@@ -61,8 +59,8 @@ def process_candidate(candidate,mongo_handler,client):
                 print(f"Number of Publications from New Resume which weren't in the old one : "+str(len(added_publications)))
 
                 #Remove the old Publications
-                filtered_old_array = [obj for obj in can.candidate["publication"] if obj["title"] not in removed_publications]
-                can.candidate["publication"]= filtered_old_array
+                filtered_old_array = [obj for obj in can.candidate["publications"] if obj["title"] not in removed_publications]
+                can.candidate["publications"]= filtered_old_array
 
                 # Convert the new ones
                 added_objects_array = [{
@@ -97,16 +95,16 @@ def process_candidate(candidate,mongo_handler,client):
                             else:
                                 new["embedding"] = source_item["embedding"]
 
-                    can.candidate["publication"].append(new)
+                    can.candidate["publications"].append(new)
 
                 if len(removed_publications)>0 or len(added_publications)>0:
                     can.update_candidate(col)
             else:
-                print(f"The Author wasn't found : '{candidate['author']}'.")
+                print(f"The Author wasn't found : '{candidate['name']}'.")
 
         else:
-            if candidate['author'] is not None:
-                if len(candidate["publication"])>0:
+            if candidate['name'] is not None:
+                if len(candidate["publications"])>0:
                     print("Insert the author")
                     can = Candidate()
                     if RESEARCHGATE:
@@ -137,7 +135,8 @@ def process_candidate(candidate,mongo_handler,client):
                     can = Candidate(candidate)
                     can.insert_candidate(col)
 
-def find_ranking(position_title,position_description,candidates):
+
+def find_candidate(candidates):
     start_time = time.time()
     core_crawling()
 
@@ -146,10 +145,9 @@ def find_ranking(position_title,position_description,candidates):
     client = mongo_handler.connect()
 
     if THREADING:
-        # List to hold all threads
         threads = []
         for candidate in candidates:
-            t = threading.Thread(target=process_candidate, args=(candidate, mongo_handler,client))
+            t = threading.Thread(target=process_candidate, args=(candidate, mongo_handler, client))
             t.start()
             threads.append(t)
 
@@ -165,12 +163,13 @@ def find_ranking(position_title,position_description,candidates):
     elapsed_time = end_time - start_time
     print(f"Time taken: {elapsed_time} seconds")
 
-    return return_candidates(candidates,mongo_handler,client)
+    return transform_data_for_frontend(candidates,mongo_handler,client)
 
-def return_candidates(candidates,mongo_handler,client):
+
+def transform_data_for_frontend(candidates,mongo_handler,client):
     updated_candidates=[]
     for candidate in candidates:
-        print(f"The Author : '{candidate['author']}'.")
+        print(f"The Author : '{candidate['name']}'.")
         if client:
             found = False
             db, col = mongo_handler.get_database_and_collection('CVproject', 'Candinates')
@@ -186,18 +185,18 @@ def return_candidates(candidates,mongo_handler,client):
                             profile['phone'] == candidate["phone"] and candidate["phone"] != "Unknown"):
                         found = True
                         break
-                    for pub in candidate["publication"]:
+                    for pub in candidate["publications"]:
                         if found:  # Check the flag at the start of the outer loop
                             break
                         for pub_in_database in profile["researchgate"]:
-                            if pub['title'] == pub_in_database['title'] and profile["author"] == candidate["author"]:
+                            if pub['title'] == pub_in_database['title'] and profile["name"] == candidate["name"]:
                                 found = True
                                 break
                 if found:
-                    print(f"The query  some Documents for the Candidate '{profile['author']}'.")
+                    print(f"The query  some Documents for the Candidate '{profile['name']}'.")
                     totalarticles = 0
                     totalconference = 0
-                    for pub in profile["publication"]:
+                    for pub in profile["publications"]:
                         if "type" in pub:
                             type_pub = pub['type'].lower()
                             if type_pub == "article" or type_pub == "journal" :
@@ -214,11 +213,6 @@ def return_candidates(candidates,mongo_handler,client):
                     updated_candidates.append(json.loads(json.dumps(can, default=json_serial, indent= None)))
     return updated_candidates
 
-
-def json_serial(obj):
-    if isinstance(obj, ObjectId):
-        return str(obj)  # Convert ObjectId to string
-    raise TypeError(f'Type not serializable: {type(obj)}')
 
 def update_candidate_profile(_id, url_updated):
     mongo_handler = MongoDBHandler("localhost", 27017)
@@ -250,7 +244,7 @@ def update_candidate_profile(_id, url_updated):
 
             totalarticles = 0
             totalconference = 0
-            for pub in profile["publication"]:
+            for pub in profile["publications"]:
                 if "type" in pub:
                     type_pub = pub['type'].lower()
                     if type_pub == "article" or type_pub == "journal":
@@ -265,14 +259,3 @@ def update_candidate_profile(_id, url_updated):
             }
 
             return(json.loads(json.dumps(candinate, default=json_serial, indent=None)))
-
-def ranking(NotFoundPublications,candidates,jobTitle,jobDescription):
-    candidates_scores = []
-    position = Position(jobTitle, jobDescription)
-    position_embedding = specter_embedding(position.title, position.abstract)
-    for profile in candidates:
-        print(f"The candidate is the {profile['candidate']['author']}")
-        can = Candidate(profile["candidate"])
-        candidates_scores.append(mean_publications(can.candidate, position_embedding,NotFoundPublications))
-    return rank_candidates(candidates_scores)
-

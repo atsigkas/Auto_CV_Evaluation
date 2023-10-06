@@ -35,8 +35,8 @@ class Scholar(GoogleSearch):
     def search(self, response,url):
         soup = BeautifulSoup(response, 'html.parser')
         author = extract_text(soup,'div#gsc_prf_in')
-        print(self.candidate['author'].lower(), author.lower(), similarity(self.candidate['author'].lower(), author.lower()))
-        if similarity(self.candidate['author'].lower(), author.lower()) > 0.7:
+        print(self.candidate['name'].lower(), author.lower(), similarity(self.candidate['name'].lower(), author.lower()))
+        if similarity(self.candidate['name'].lower(), author.lower()) > 0.7:
             author_id=extract_scholar_id(url)
             try:
                 author = scholarly.search_author_id(author_id)
@@ -46,8 +46,8 @@ class Scholar(GoogleSearch):
             print(json.dumps(author_filled, indent=4))
             for publication in author_filled["publications"]:
                 print(publication["bib"]["title"])
-                print(self.candidate['publication'][self.publication_index]['title'])
-                if similarity(self.candidate['publication'][self.publication_index]['title'], publication["bib"]["title"]):
+                print(self.candidate['publications'][self.publication_index]['title'])
+                if similarity(self.candidate['publications'][self.publication_index]['title'], publication["bib"]["title"]):
                     self.candidate['googlescholar_url'] = url
                     return self.candidate
 
@@ -58,8 +58,8 @@ class Scholar(GoogleSearch):
             return callback(response,url)
 
     def search_author(self, path):
-        author_url = self.candidate['author'].lower().replace(" ", "+")
-        paper_url = self.candidate['publication'][self.publication_index]['title'].replace(" ", "+")
+        author_url = self.candidate['name'].lower().replace(" ", "+")
+        paper_url = self.candidate['publications'][self.publication_index]['title'].replace(" ", "+")
         url = "https://www.google.com/search?q="+self.website+'+'+author_url
 
         response = get_proxy_url(url,True)
@@ -79,8 +79,8 @@ class Scholar(GoogleSearch):
                 if self.candidate['googlescholar_url']:
                     return self.candidate
             except Exception as error:
-                print("Problem Found Author")
-        if self.publication_index < len(self.candidate['publication']):
+                print(f"Scholar: Problem Found Author {error}")
+        if self.publication_index < len(self.candidate['publications']):
             self.publication_index += 1
             self.search_author(path)
         return

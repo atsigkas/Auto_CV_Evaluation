@@ -4,8 +4,8 @@ from nltk.tag import StanfordNERTagger
 # Function to initialize the Stanford NER tagger
 def initialize_stanford_ner():
     # Set the paths to the Stanford NER model and jar files
-    stanford_ner_model = r'C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\PARTF\stanford-ner-4.2.0\stanford-ner-2020-11-17\classifiers\english.all.3class.distsim.crf.ser.gz'
-    stanford_ner_jar = r'C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\PARTF\stanford-ner-4.2.0\stanford-ner-2020-11-17\stanford-ner-4.2.0.jar'
+    stanford_ner_model = r'C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\ResumeParser\stanford-ner-4.2.0\stanford-ner-2020-11-17\classifiers\english.all.3class.distsim.crf.ser.gz'
+    stanford_ner_jar = r'C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\ResumeParser\stanford-ner-4.2.0\stanford-ner-2020-11-17\stanford-ner-4.2.0.jar'
 
     # Set the environment variable for the Java runtime (replace 'java_path' with your Java installation path)
     java_path = 'C:/Program Files/Java/jdk-21/bin/java.exe'

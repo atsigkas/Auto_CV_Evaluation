@@ -68,7 +68,7 @@ class ResearchGateScraper:
         We go to a publication page and we are extracting the necessary information
         :return: It doesn't return something
         """
-        for i,publication in enumerate(self.candidate['publication']):
+        for i,publication in enumerate(self.candidate['publications']):
             for researchgate_publication in self.researchgate_publications:
                 if similarity(publication['title'].lower(),researchgate_publication['title'].lower())>0.8:
                     response = get_proxy_url(researchgate_publication['url'],True)
@@ -108,18 +108,18 @@ class ResearchGateScraper:
                     for key, selector in selectors.items():
                         researchgate_publication[key] = extract_text(soup, selector)
 
-                    self.candidate['publication'][i]['researchgate_url'] = researchgate_publication['url']
-                    self.candidate['publication'][i]['abstract'] = researchgate_publication['abstract']
-                    self.candidate['publication'][i]['type'] = researchgate_publication['type']
+                    self.candidate['publications'][i]['researchgate_url'] = researchgate_publication['url']
+                    self.candidate['publications'][i]['abstract'] = researchgate_publication['abstract']
+                    self.candidate['publications'][i]['type'] = researchgate_publication['type']
                     if conference_text=="NO":
-                        self.candidate['publication'][i]['name_of_type'] = researchgate_publication['name_of_type']
+                        self.candidate['publications'][i]['name_of_type'] = researchgate_publication['name_of_type']
                     else:
-                        self.candidate['publication'][i]['name_of_type'] = conference_text
+                        self.candidate['publications'][i]['name_of_type'] = conference_text
                         researchgate_publication['name_of_type']=conference_text
                     # January 2006
                     if researchgate_publication['year'] != "Unknown":
                         researchgate_publication['year'] = researchgate_publication['year'].split()[1]
-                        self.candidate['publication'][i]['year'] = researchgate_publication['year']
+                        self.candidate['publications'][i]['year'] = researchgate_publication['year']
 
                     print(json.dumps(researchgate_publication, indent=4))
                     break
@@ -127,7 +127,7 @@ class ResearchGateScraper:
 
     def update_publication(self, col):
         try:
-            for i, pub in enumerate(self.candidate["publication"]):
+            for i, pub in enumerate(self.candidate["publications"]):
                 new_url = pub['researchgate_url']
                 abstract = pub['abstract']
                 # Update only the 'publication' list

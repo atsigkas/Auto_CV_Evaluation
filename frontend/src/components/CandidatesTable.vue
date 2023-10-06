@@ -15,14 +15,14 @@
         <tbody>
           <template v-for="({ candidate, totalArticles, totalConference }, index) in localCandidates" :key="index">
             <tr>
-              <td>{{ candidate.author }}</td>
+              <td>{{ candidate.name }}</td>
               <td>{{ candidate.email }}</td>
-              <td>{{ candidate.publication.length }}</td>
+              <td>{{ candidate.publications.length }}</td>
               <td>{{ totalArticles }}</td>
               <td>{{ totalConference }}</td>
               <td>
                 <div class="actions-wrapper">
-                  <button v-if="candidate.publication && candidate.researchgate_url !='' || candidate.googlescholar_url!=''" type="button" class="candidate-icon candidate-show"
+                  <button v-if="candidate.publications && candidate.researchgate_url !='' || candidate.googlescholar_url!=''" type="button" class="candidate-icon candidate-show"
                     @click="publicationEdit({ index })">
                     <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true">
                       <path stroke-linecap="round" stroke-linejoin="round"
@@ -65,7 +65,7 @@
         <div class="dialog-wrapper">
           <form @submit.prevent="submitPublications">
             <h2 class="dialog-title">Publications of the Candidate :
-              <span class="dialog-name">{{ this.localCandidates[this.localIndex].candidate.author }}</span>
+              <span class="dialog-name">{{ this.localCandidates[this.localIndex].candidate.name }}</span>
             </h2>
             <div class="list-wrapper">
               <div class="list-column">
@@ -112,10 +112,10 @@ export default {
       type: Array,
       required: true,
     },
-    jobTitle: {
+    positionTitle: {
       type: String
     },
-    jobDescription: {
+    positionDescription: {
       type: String
     },
     ranking: {
@@ -159,10 +159,9 @@ export default {
     },
     candidateForm(event) {
       event.preventDefault()
-      //TODO
     },
     publicationEdit({ index }) {
-      this.localIndex = index
+      this.localIndex = index;
       this.showPublications = true;
     },
     candidateEditUrl({ id }) {
@@ -216,8 +215,8 @@ export default {
       const formData = new FormData();
       formData.append('NotFoundPublications', JSON.stringify(this.NotFoundPublications))
       formData.append('candidates', JSON.stringify(this.localCandidates))
-      formData.append('jobTitle', this.jobTitlejobTitle);
-      formData.append('jobDescription', this.jobDescription);
+      formData.append('positionTitle', this.positionTitlepositionTitle);
+      formData.append('positionDescription', this.positionDescription);
 
       axios.post('http://127.0.0.1:8000/api-endpoint/RankingCandidates', formData, {
         headers: {
@@ -248,17 +247,17 @@ export default {
   mounted() {
     this.showPublications - false;
     this.localCandidates.forEach(candidate => {
-      candidate.candidate.publication.forEach(pub => {
+      candidate.candidate.publications.forEach(pub => {
         pub.checked = pub.researchgate_url || pub.googlescholar_url ? true : false;
       });
     });
   },
   computed: {
     foundPublications: function () {
-      return this.localCandidates[this.localIndex].candidate.publication.filter(pub => pub.researchgate_url != '' || pub.googlescholar_url != '')
+      return this.localCandidates[this.localIndex].candidate.publications.filter(pub => pub.researchgate_url != '' || pub.googlescholar_url != '')
     },
     notFoundPublications: function () {
-      return this.localCandidates[this.localIndex].candidate.publication.filter(pub => pub.researchgate_url == '' && pub.googlescholar_url == '')
+      return this.localCandidates[this.localIndex].candidate.publications.filter(pub => pub.researchgate_url == '' && pub.googlescholar_url == '')
     }
   }
 }

@@ -1,11 +1,10 @@
 from sklearn.metrics.pairwise import cosine_similarity
-
 from ..Embedding.embedding import specter_embedding
-from ...scrapers.SJR.SJR import search_type
-from ...scrapers.CORE.CORE import check_csv_files
+from ...Scrapers.SJR.SJR import search_type
+from ...Scrapers.CORE.CORE import check_csv_files
 
-THRESHOLD=0
-PUB_PERCENTAGE = 0.85
+THRESHOLD = 0
+PUB_PERCENTAGE = 1
 TYPE_PERCENTAGE = 0.15
 
 def compute_similarity(embedding1, embedding2):
@@ -21,12 +20,12 @@ def mean_publications(author,position_embedding,NotFoundPublications):
     sorted_data = []
     rank = 0
     for notfoundpub in NotFoundPublications:
-        for pub in author["publication"] :
+        for pub in author["publications"] :
             if notfoundpub['pub']['title'] == pub['title'] and author["_id"]==notfoundpub["id"]:
                 pub['embedding'] = specter_embedding(pub['title'],'')
                 print("TIME")
 
-    for pub in author["publication"]:
+    for pub in author["publications"]:
         rank = 0
         if pub.get('embedding') and pub['embedding'] != '':
             text_similarity = compute_similarity(pub['embedding'], position_embedding)[0][0]
@@ -42,7 +41,10 @@ def mean_publications(author,position_embedding,NotFoundPublications):
             if rank > 0:
                 text_similarity = text_similarity * PUB_PERCENTAGE
                 rank_type = normalization(rank, 0, 100) * TYPE_PERCENTAGE
-                sorted_data.append(text_similarity+rank_type)
+                sum_rank_type = text_similarity+rank_type
+                if sum > 1:
+                    sum_rank_type = 1
+                sorted_data.append(sum)
             else:
                 sorted_data.append(text_similarity)
 
@@ -50,7 +52,7 @@ def mean_publications(author,position_embedding,NotFoundPublications):
     print(f"Length :{length_of_publication}")
     mean = round(sum(sorted_data)/length_of_publication, 4)
     candidate_score = {
-        "author": author["author"],
+        "name": author["name"],
         "score": mean
     }
     return candidate_score

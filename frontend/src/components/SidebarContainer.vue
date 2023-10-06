@@ -55,7 +55,7 @@
               </ul>
             </div>
           </div>
-          <CandidatesTable :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription' :ranking="ranking" @updateRanking="updateRanking" />
+          <CandidatesTable :candidates="candidates" :positionTitle='positionTitle' :positionDescription='positionDescription' :ranking="ranking" @updateRanking="updateRanking" />
           <RankingCandidates :ranking="ranking" />
         </div>
       </div>
@@ -92,10 +92,10 @@ export default {
       type: Array,
       required: true,
     },
-    jobTitle: {
+    positionTitle: {
       type: String
     },
-    jobDescription: {
+    positionDescription: {
       type: String
     }
   },

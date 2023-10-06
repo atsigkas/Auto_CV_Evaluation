@@ -34,7 +34,6 @@ class ScholarAPI:
         author_id = extract_scholar_id(self.candidate['googlescholar_url'])
         author = scholarly.search_author_id(author_id)
 
-        # fill author including their publications
         scholar_publications = scholarly.fill(author)
         for scholar_publication in author['publications']:
             pub = {
@@ -47,7 +46,7 @@ class ScholarAPI:
             }
             self.scholar_publications.append(pub)
 
-        for i, publication in enumerate(self.candidate['publication']):
+        for i, publication in enumerate(self.candidate['publications']):
             found=False
             for scholar_publication in self.scholar_publications:
                 if similarity(publication['title'], scholar_publication['title']) > 0.7:
@@ -77,11 +76,10 @@ class ScholarAPI:
                         scholar_publication["type"] = "Unknown"
                         scholar_publication["name_of_type"] = "Unknown"
 
-                    #print(json.dumps(scholar_temp, indent=4))
-                    self.candidate['publication'][i]['googlescholar_url'] = scholar_publication['url']
-                    self.candidate['publication'][i]['abstract'] = scholar_publication['abstract']
-                    self.candidate['publication'][i]['type'] = scholar_publication['type']
-                    self.candidate['publication'][i]['name_of_type'] = scholar_publication['name_of_type']
+                    self.candidate['publications'][i]['googlescholar_url'] = scholar_publication['url']
+                    self.candidate['publications'][i]['abstract'] = scholar_publication['abstract']
+                    self.candidate['publications'][i]['type'] = scholar_publication['type']
+                    self.candidate['publications'][i]['name_of_type'] = scholar_publication['name_of_type']
 
                     break
 
@@ -91,7 +89,7 @@ class ScholarAPI:
 
     def update_publication(self, col):
         try:
-            for i, pub in enumerate(self.candidate["publication"]):
+            for i, pub in enumerate(self.candidate["publications"]):
                 new_url = pub['googlescholar_url']
                 print(new_url)
                 # Update only the 'publication' list

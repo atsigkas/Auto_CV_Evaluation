@@ -17,7 +17,7 @@ def publications_specter_embedding(author):
     try:
         embeddings = []
         print("####### Embeddings ############")
-        for pub in author["publication"]:
+        for pub in author["publications"]:
             for source_name in ['researchgate','googlescholar']:
                 source_item = None
                 source_item_index = None
@@ -40,13 +40,11 @@ def publications_specter_embedding(author):
 
 def update_embedding(authors_or_author, col):
         try:
-            #print(authors_or_author.get('publication'))
-            #print(authors_or_author['publication'])
             # Update the document if the field has changed
             result = col.update_one(
                 {"_id": authors_or_author['_id']},
                 {"$set": {
-                    "publication": authors_or_author['publication'],
+                    "publications": authors_or_author['publications'],
                     "researchgate": authors_or_author.get('researchgate', []),
                     "googlescholar": authors_or_author.get('googlescholar', [])
                 }}

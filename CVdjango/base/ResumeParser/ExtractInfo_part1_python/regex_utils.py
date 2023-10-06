@@ -75,13 +75,6 @@ def extract_publications(text, candidate_name):
     
     # Add the publication regex patterns
     regex_patterns = [
-        # MLA cititation for i) publications in Journals AND ii) publication in Conferences wih Review
-        # ENA GENIKO KALO FORMAT EINAI :
-        # 1. \"(.*?)\".*?\(\d{4}\)
-        # TO KALO akoma kalo pou vazei mesa kai quotes se periergi morfi einai 
-        # 2. r'[\"“”](.*?)[\"“”].*?\(\d{4}\)', 
-        # 3. Prepei na apofasisoume an protimame to 3 i ta 1 i 2--- MAKE IT WORK cause its more robust approach
-        # Pavlopoulos.*?\"(.*?)\".*?\(\d{4}\)
         rf'{re.escape(surname)}.{{0,250}}?\"(.*?)\".*?\(\d{{4}}\)'
     ]
     publications = []

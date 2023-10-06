@@ -20,11 +20,11 @@
       <div class="job-container">
         <div class="job-title-container">
           <label for="job-title">Academic Position Title</label>
-          <input id="job-title" v-model="jobTitle" class="job-title-textarea" />
+          <input id="job-title" v-model="positionTitle" class="job-title-textarea" />
         </div>
         <div class="job-description-container">
           <label for="job-description">Academic Position Description</label>
-          <textarea id="job-description" v-model="jobDescription" class="job-description-textarea"></textarea>
+          <textarea id="job-description" v-model="positionDescription" class="job-description-textarea"></textarea>
         </div>
       </div>
     </main>
@@ -47,7 +47,7 @@
       </div>
     </div>
   </div>
-  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :jobTitle='jobTitle' :jobDescription='jobDescription'
+  <SidebarContainer ref="sidebarContainer" v-if="showSidebar" :pdfFiles="pdfFiles" :candidates="candidates" :positionTitle='positionTitle' :positionDescription='positionDescription'
     @update-pdf-files="updatePdfFiles" />
   <SpinnerLoading />
   <DialogComponent />
@@ -68,8 +68,8 @@ export default {
   },
   data() {
     return {
-      jobTitle: "",
-      jobDescription: "",
+      positionTitle: "",
+      positionDescription: "",
       candidates:[],
       pdfFiles: [],
       showSidebar: false
@@ -77,7 +77,7 @@ export default {
   },
   computed: {
     isButtonDisabled() {
-      const disabled = !this.pdfFiles || this.pdfFiles.length === 0 || !this.jobTitle || !this.jobDescription;
+      const disabled = !this.pdfFiles || this.pdfFiles.length === 0 || !this.positionTitle || !this.positionDescription;
       console.log('Button Disabled:', disabled);  // Log the value
       return disabled;
     },
@@ -134,8 +134,8 @@ export default {
       }
 
       // Add the two string values
-      formData.append('jobTitle', this.jobTitle);
-      formData.append('jobDescription', this.jobDescription);
+      formData.append('positionTitle', this.positionTitle);
+      formData.append('positionDescription', this.positionDescription);
       
       
       axios.post('http://127.0.0.1:8000/api-endpoint/', formData, {

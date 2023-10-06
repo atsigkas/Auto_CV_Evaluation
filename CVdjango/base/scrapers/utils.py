@@ -1,20 +1,22 @@
 from urllib.parse import urlencode
 from difflib import SequenceMatcher
 import requests
+from bson import ObjectId
 
+#API_KEY = '98042e97-cd60-49e0-b01a-12a9debe09c7'
+#https://proxy.scrapeops.io/v1/?
 
-'''
-API_KEY = '98042e97-cd60-49e0-b01a-12a9debe09c7'
-https://proxy.scrapeops.io/v1/?
-'''
+# scrapeops
+SCRAPEOPS=False
 
 # scraperapi
+SCRAAPERAPI=False
 API_KEY='3e2b034a8797765ba1f14fa1f1f5078b'
 
 # flaresolverr
 FLARESOLVERR=True
-SCRAAPERAPI=False
-SCRAPEOPS=False
+
+
 
 def get_data(url,UsingProxy):
     if FLARESOLVERR:
@@ -54,3 +56,7 @@ def extract_text(soup, selector):
 
     return result
 
+def json_serial(obj):
+    if isinstance(obj, ObjectId):
+        return str(obj)
+    raise TypeError(f'Type not serializable: {type(obj)}')

@@ -14,7 +14,7 @@ class Candidate:
         col.update_one(
             {"_id": self.candidate['_id']},
             {"$set": {
-                "publication": self.candidate['publication'],
+                "publications": self.candidate['publications'],
                 "researchgate": self.candidate.get('researchgate', []),
                 "googlescholar": self.candidate.get('googlescholar', [])
         }}
@@ -25,7 +25,7 @@ class Candidate:
             {"$set": {
                 "researchgate_url":self.candidate["researchgate_url"],
                 "googlescholar_url":self.candidate["googlescholar_url"],
-                "publication": self.candidate['publication'],
+                "publications": self.candidate['publications'],
                 "researchgate": self.candidate.get('researchgate', []),
                 "googlescholar": self.candidate.get('googlescholar', [])
         }}

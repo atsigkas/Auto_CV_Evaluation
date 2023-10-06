@@ -10,8 +10,8 @@ import time
 import os
 import glob
 
-PATH = r"/CVdjango/base/scrapers/Resources/chromedriver.exe"
-DIRECTORY = r"C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\scrapers\Resources"
+PATH = r"/CVdjango/base/Scrapers/Resources/chromedriver.exe"
+DIRECTORY = r"C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\Scrapers\Resources"
 OPTIONS = [
     "CORE2023",
     "CORE2021",
@@ -59,7 +59,7 @@ def search_and_extract_info(date):
         driver.quit()
 
 def rename_file(date):
-    directory = r"C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\scrapers\Resources"
+    directory = r"C:\Users\stav_\Desktop\projects\Auto_CV_Evaluation\CVdjango\base\Scrapers\Resources"
     old_path = os.path.join(directory, "CORE.csv")
     new_path = os.path.join(directory, f"{date}.csv")
 
